@@ -24,7 +24,7 @@ public class UserEntity {
     @Setter
     private String name;
     @Setter
-    private Integer age;
+    private Integer  age;
     @Setter
     private String email;
     @Setter
@@ -32,6 +32,14 @@ public class UserEntity {
 
     // 권한
     // test를 위해서 문자열 하나에 ','로 구분해 권한을 묘사
-    // ROLE_USER, ROLE_ADMIN, READ_AUTHORITY, WRITE_AUTHORITY -> 나중에 다시 정의
+    // ROLE_INACTIVE (비활성 사용자 - 회원 가입만)
+    // ROLE_USER (일반 사용자 - 닉네임, 이메일 등 업데이트 한 비활성 사용자)
+    // ROLE_BUSINESS (사업자 사용자)
+    // ROLE_ADMIN (관리자)
+    @Setter
     private String authorities;
+
+    // 사업자 등록번호
+    @Setter
+    private String businessNumber;
 }

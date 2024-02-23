@@ -26,14 +26,14 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     ) {
         this.userRepository = userRepository;
 
-        // (토큰 발급) 테스트 목적의 사용자 추가
-//        createUser(CustomUserDetails.builder()
-//                .username("user")
-//                .password(passwordEncoder.encode("password"))
-//                .email("user1@gamil.com")
-//                .phone("01012345678")
-//                .authorities("ROLE_USER,READ_AUTHORITY")
-//                .build());
+/*         //(토큰 발급) 테스트 목적의 사용자 추가
+        createUser(CustomUserDetails.builder()
+                .username("user")
+                .password(passwordEncoder.encode("password"))
+                .email("user1@gamil.com")
+                .phone("01012345678")
+                .authorities("ROLE_USER,READ_AUTHORITY")
+                .build());*/
     }
 
     @Override
@@ -44,7 +44,6 @@ public class JpaUserDetailsManager implements UserDetailsManager {
                 = userRepository.findByUsername(username);
         if (optionalUser.isEmpty())
             throw new UsernameNotFoundException(username);
-//        return CustomUserDetails.fromEntity(optionalUser.get());
 
         UserEntity userEntity = optionalUser.get();
         return CustomUserDetails.builder()
@@ -69,7 +68,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
                     .password(userDetails.getPassword())
                     .email(userDetails.getEmail())
                     .phone(userDetails.getPhone())
-                    .authorities(userDetails.getRawAuthorities())
+                    .authorities("ROLE_INACTIVE") // 회원가입만 할 경우 비활성 사용자
                     .build();
             userRepository.save(newUser);
         }catch (ClassCastException e){
@@ -92,12 +91,21 @@ public class JpaUserDetailsManager implements UserDetailsManager {
                     .orElseThrow(() -> new UsernameNotFoundException(user.getUsername()));
 
             // 업데이트할 사용자 정보 추출
+            String nickname = userDetails.getNickname();
+            String name = userDetails.getName();
+            Integer age = userEntity.getAge();
             String email = userDetails.getEmail();
             String phone = userDetails.getPhone();
 
             // 엔티티에 새로운 정보 반영
+            userEntity.setNickname(nickname);
+            userEntity.setName(name);
+            userEntity.setAge(age);
             userEntity.setEmail(email);
             userEntity.setPhone(phone);
+
+            // 사용자의 권한을 ROLE_USER로 변경
+            userEntity.setAuthorities("ROLE_USER");
 
             // 엔티티 저장
             userRepository.save(userEntity);
@@ -106,6 +114,30 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public void BusinessUser(UserDetails user) {
+        // 수정하려는 사용자 확인
+        if (!userExists(user.getUsername())) {
+            throw new UsernameNotFoundException(user.getUsername());
+        }
+
+        // 사용자 정보 업데이트
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) user;
+            UserEntity userEntity = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException(user.getUsername()));
+
+            String businessNumber = userDetails.getBusinessNumber();
+            userEntity.setBusinessNumber(businessNumber);
+
+            userEntity.setAuthorities("ROLE_BUSINESS");
+            userRepository.save(userEntity);
+        }catch (ClassCastException e) {
+            log.error("Failed Cast to: {}", CustomUserDetails.class);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @Override
     public boolean userExists(String username) {

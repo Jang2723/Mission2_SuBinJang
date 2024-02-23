@@ -38,7 +38,12 @@ public class CustomUserDetails implements UserDetails {
 
 
     // 권한 데이터를 담기 위한 속성
+    @Setter
     private String authorities;
+
+    // 사업자 등록번호
+    @Setter
+    private String businessNumber;
 
     public String getRawAuthorities() {
         return this.authorities;
@@ -83,10 +88,6 @@ public class CustomUserDetails implements UserDetails {
     }
 
 
-
-
-
-    // 먼 미래
     @Override
     public boolean isAccountNonExpired() {
         return true;

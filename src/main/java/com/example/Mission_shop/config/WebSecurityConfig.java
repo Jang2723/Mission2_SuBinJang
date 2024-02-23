@@ -34,15 +34,21 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 // url에 따른 요청 인가
                 .authorizeHttpRequests(auth -> auth
-                            .requestMatchers(
-                                    "/token/issue"
-                            )
-                            .permitAll()
+                        .requestMatchers(
+                                "/token/issue"
+                        )
+                        .permitAll()
 
-                            .requestMatchers(
-                                    "/users/register"
-                            )
-                            .anonymous()
+                        .requestMatchers(
+                                "/users/register"
+                        )
+                        .anonymous()
+
+                        .requestMatchers(
+                                "/users/update",
+                                "/users/business"
+                        )
+                        .authenticated()
                 )
                 // JWT를 사용하기 때문에 보안 관련 세션 헤제
                 .sessionManagement(session -> session
