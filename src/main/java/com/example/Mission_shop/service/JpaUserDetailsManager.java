@@ -26,14 +26,12 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     ) {
         this.userRepository = userRepository;
 
-/*         //(토큰 발급) 테스트 목적의 사용자 추가
+         // 관리자
         createUser(CustomUserDetails.builder()
-                .username("user")
-                .password(passwordEncoder.encode("password"))
-                .email("user1@gamil.com")
-                .phone("01012345678")
-                .authorities("ROLE_USER,READ_AUTHORITY")
-                .build());*/
+                .username("admin")
+                .password(passwordEncoder.encode("admin"))
+                .authorities("ROLE_ADMIN")
+                .build());
     }
 
     @Override
@@ -70,6 +68,12 @@ public class JpaUserDetailsManager implements UserDetailsManager {
                     .phone(userDetails.getPhone())
                     .authorities("ROLE_INACTIVE") // 회원가입만 할 경우 비활성 사용자
                     .build();
+
+            // 사용자가 "admin"일 경우 권한을 "ROLE_ADMIN"으로 설정
+            if (newUser.getUsername().equals("admin")) {
+                newUser.setAuthorities("ROLE_ADMIN");
+            }
+
             userRepository.save(newUser);
         }catch (ClassCastException e){
             log.error("Failed Cast to: {}", CustomUserDetails.class);
@@ -93,7 +97,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             // 업데이트할 사용자 정보 추출
             String nickname = userDetails.getNickname();
             String name = userDetails.getName();
-            Integer age = userEntity.getAge();
+            Integer age = userDetails.getAge();
             String email = userDetails.getEmail();
             String phone = userDetails.getPhone();
 
@@ -106,6 +110,11 @@ public class JpaUserDetailsManager implements UserDetailsManager {
 
             // 사용자의 권한을 ROLE_USER로 변경
             userEntity.setAuthorities("ROLE_USER");
+
+            // 이미 사업자 전환 신청이 수락된 사용자가 수정할 경우 권한 유지 // TODO 신청 거절한 사람도 다시 ACCEPT?
+            if (userEntity.getApply() != null  && userEntity.getApply().equals("ACCEPT")){
+                userEntity.setAuthorities("ROLE_BUSINESS");
+            }
 
             // 엔티티 저장
             userRepository.save(userEntity);
@@ -128,9 +137,11 @@ public class JpaUserDetailsManager implements UserDetailsManager {
                     .orElseThrow(() -> new UsernameNotFoundException(user.getUsername()));
 
             String businessNumber = userDetails.getBusinessNumber();
+            String apply = userDetails.getApply();
             userEntity.setBusinessNumber(businessNumber);
+            userEntity.setApply(apply);
 
-            userEntity.setAuthorities("ROLE_BUSINESS");
+            // userEntity.setAuthorities("ROLE_BUSINESS"); // 승인되면
             userRepository.save(userEntity);
         }catch (ClassCastException e) {
             log.error("Failed Cast to: {}", CustomUserDetails.class);

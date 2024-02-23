@@ -24,7 +24,7 @@ public class UserEntity {
     @Setter
     private String name;
     @Setter
-    private Integer  age;
+    private Integer age;
     @Setter
     private String email;
     @Setter
@@ -42,4 +42,8 @@ public class UserEntity {
     // 사업자 등록번호
     @Setter
     private String businessNumber;
+
+    // 사업자 전환 신청
+    @Setter
+    private String apply; // 신청 시 : apply , 수락 ; accept , 거절 : refuse
 }

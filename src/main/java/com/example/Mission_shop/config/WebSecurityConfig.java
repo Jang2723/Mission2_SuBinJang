@@ -49,6 +49,13 @@ public class WebSecurityConfig {
                                 "/users/business"
                         )
                         .authenticated()
+
+
+                        .requestMatchers(
+                                "/users/admin/applyList",
+                                "/users/admin/apply/accept-refuse"
+                        )
+                        .hasRole("ADMIN")
                 )
                 // JWT를 사용하기 때문에 보안 관련 세션 헤제
                 .sessionManagement(session -> session
@@ -65,7 +72,7 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    // 사용자 정보 관리 클래스
+    /*// 사용자 정보 관리 클래스
     public UserDetailsManager userDetailsManager(
             PasswordEncoder passwordEncoder
     ) {
@@ -76,5 +83,5 @@ public class WebSecurityConfig {
         // Spring Security에서 기본으로 제공하는,
         // 메모리 기반 사용자 관리 클래스 + 사용자 1
         return new InMemoryUserDetailsManager(user1);
-    }
+    }*/
 }

@@ -25,17 +25,15 @@ public class CustomUserDetails implements UserDetails {
     @Setter
     private String password;
     @Setter
-    private String email;
-    @Setter
-    private String phone;
-    @Setter
     private String nickname;
     @Setter
     private String name;
     @Setter
     private Integer age;
-
-
+    @Setter
+    private String email;
+    @Setter
+    private String phone;
 
     // 권한 데이터를 담기 위한 속성
     @Setter
@@ -45,9 +43,13 @@ public class CustomUserDetails implements UserDetails {
     @Setter
     private String businessNumber;
 
-    public String getRawAuthorities() {
+    // 사업자 전환 신청
+    @Setter
+    private String apply;
+
+/*    public String getRawAuthorities() {
         return this.authorities;
-    }
+    }*/
 
 
     @Override
