@@ -6,12 +6,18 @@ import com.example.Mission_shop.repo.UserRepository;
 import com.example.Mission_shop.service.JpaUserDetailsManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,21 +57,15 @@ public class UserController {
     // username과 password가 일치하면 필수정보 update
     @PostMapping("/update")
     public String updateRequest(
-            @RequestParam("username")
-            String username,
-            @RequestParam("password")
-            String password,
-            @RequestParam("nickname")
-            String nickname,
-            @RequestParam("name")
-            String name,
-            @RequestParam("age")
-            Integer age,
-            @RequestParam("email")
-            String email,
-            @RequestParam("phone")
-            String phone
-    ) {
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("nickname") String nickname,
+            @RequestParam("name") String name,
+            @RequestParam("age") Integer age,
+            @RequestParam("email") String email,
+            @RequestParam("phone") String phone
+            //@RequestParam(value = "image" , required = false) MultipartFile imageFile
+    )   {
         UserDetails userDetails = manager.loadUserByUsername(username);
         if (userDetails instanceof CustomUserDetails) {
             CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
@@ -75,6 +75,12 @@ public class UserController {
                 customUserDetails.setAge(age);
                 customUserDetails.setEmail(email);
                 customUserDetails.setPhone(phone);
+
+                /*// 이미지 업로드 처리
+                if (!imageFile.isEmpty()) {
+                    saveImage(username, imageFile);
+                }*/
+
                 manager.updateUser(customUserDetails);
                 return "User information updated successfully";
             } else {
@@ -84,6 +90,7 @@ public class UserController {
             return "User details not found";
         }
     }
+
 
     // 일반 사용자 -> 사업자 사용자로 변환
     @PostMapping("/business")

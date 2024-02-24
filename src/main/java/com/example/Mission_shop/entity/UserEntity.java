@@ -3,6 +3,9 @@ package com.example.Mission_shop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
 @Entity
@@ -46,4 +49,12 @@ public class UserEntity {
     // 사업자 전환 신청
     @Setter
     private String apply; // 신청 시 : apply , 수락 ; accept , 거절 : refuse
+
+    @Setter
+    private String avatar; // 이미지
+
+
+    /*// 중고거래
+    @OneToMany(mappedBy = "user")
+    private List<Item> items = new ArrayList<>();*/
 }

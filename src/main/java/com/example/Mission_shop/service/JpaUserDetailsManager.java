@@ -11,8 +11,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 @Slf4j
@@ -108,6 +112,9 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             userEntity.setEmail(email);
             userEntity.setPhone(phone);
 
+           /* // 이미지 경로 저장
+            userEntity.setAvatar(userDetails.getAvatar());*/
+
             // 사용자의 권한을 ROLE_USER로 변경
             userEntity.setAuthorities("ROLE_USER");
 
@@ -123,6 +130,56 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // 이미지 저장
+    /*private void saveImage(String username, MultipartFile image) {
+        // 유저 확인
+        Optional<UserEntity> optionalUser
+                = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        // 파일 저장 위치
+        // media/{username}/profile.{확장자}
+        // 없다면 폴더 생성
+        String profileDir = String.format("media/%s/", username);
+        log.info(profileDir); //  확인
+        // 주어진 Path를 기준으로, 없는 모든 디렉토리 생성하는 메서드
+        try {
+            Files.createDirectories(Path.of(profileDir));
+        }catch (IOException e) {
+            // 폴더를 만드는데 실패하면 기록하고 사용자에게 알림
+            log.error(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // 실제 파일 이름을 경로와 확장자를 포함하여 만들기
+        String originalFilename = image.getOriginalFilename();
+        String[] fileNameSplit = originalFilename.split("\\.");
+        String extension = fileNameSplit[fileNameSplit.length - 1];
+        String profileFilename = "profile." + extension;
+        log.info(profileFilename);
+
+        String profilePath = profileDir + profileFilename;
+        log.info(profilePath);
+
+        // 실제로 해당 위치에 파일을 저장
+        try {
+            image.transferTo(Path.of(profilePath));
+        }catch (IOException e) {
+            log.error(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // User에 아바타 위치를 저장
+        String requestPath = String.format("/static/%s/%s", username, profileFilename);
+        log.info(requestPath);
+        UserEntity target = optionalUser.get();
+        target.setAvatar(requestPath);
+
+        // 응답하기
+        userRepository.save(target);
+    }*/
 
     public void BusinessUser(UserDetails user) {
         // 수정하려는 사용자 확인
@@ -148,6 +205,29 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    // 중고거래 (일반 사용자)
+//    public void createTrade*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override

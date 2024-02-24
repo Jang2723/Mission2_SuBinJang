@@ -51,6 +51,9 @@ public class CustomUserDetails implements UserDetails {
         return this.authorities;
     }*/
 
+    @Setter
+    private String avatar; // 이미지
+
 
     @Override
     // ROLE_USER, ROLE_ADMIN, READ_AUTHORITY, WRITE_AUTHORITY
@@ -74,10 +77,12 @@ public class CustomUserDetails implements UserDetails {
         userDetails.setAge(userEntity.getAge());
         userDetails.setEmail(userEntity.getEmail());
         userDetails.setPhone(userEntity.getPhone());
+        userDetails.setAvatar(userEntity.getAvatar());
         /*// 권한은 일단 빈 문자열로 설정
         userDetails.setAuthorities("");*/
         return userDetails;
     }
+
 
     @Override
     public String getPassword() {
