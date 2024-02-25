@@ -51,7 +51,9 @@ public class WebSecurityConfig {
                         .authenticated()
 
                         .requestMatchers(
-                                "/items/register"
+                                "/items/register",
+                                "/items/update",
+                                "/items/delete"
                         )
                         .hasRole("USER")
 

@@ -36,14 +36,6 @@ public class ItemController {
             // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
             String username = userDetails.getUsername();
 
-            // 사용자의 ROLE이 USER인지 확인
-            boolean isUser = userDetails.getAuthorities().stream()
-                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
-
-            if (!isUser) {
-                return "일반 사용자만 중고거래 등록이 가능합니다.";
-            }
-
             return itemService.registerItem(itemDto, username);
         } else {
             // username과 password가 일치하지 않을 경우 처리
@@ -56,6 +48,40 @@ public class ItemController {
     public List<ItemDto> ItemAllList() {
         return itemService.itemAllList();
 
+    }
+
+    // 등록된 물품 정보 작성자 수정
+    @PostMapping("/update")
+    public String updateItem(@RequestBody ItemDto itemDto){
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
+            String username = userDetails.getUsername();
+
+            return itemService.updateItem(itemDto, username);
+        } else {
+            // username과 password가 일치하지 않을 경우 처리
+            return "Authentication failed. Invalid username or password.";
+        }
+    }
+
+    // 등록한 물품 작성자가 삭제
+    @PostMapping("/delete")
+    public String deleteItem (@RequestBody ItemDto itemDto){
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
+            String username = userDetails.getUsername();
+
+            return itemService.deleteItem(itemDto, username);
+        } else {
+            // username과 password가 일치하지 않을 경우 처리
+            return "Authentication failed. Invalid username or password.";
+        }
     }
 
 
