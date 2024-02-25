@@ -27,6 +27,7 @@ public class ItemDto {
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .minimumPrice(entity.getMinimumPrice())
+                .status(entity.getStatus())
                 .build();
     }
 }

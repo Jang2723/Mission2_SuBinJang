@@ -46,10 +46,19 @@ public class WebSecurityConfig {
 
                         .requestMatchers(
                                 "/users/update",
-                                "/users/business",
-                                "/items/register"
+                                "/users/business"
                         )
                         .authenticated()
+
+                        .requestMatchers(
+                                "/items/register"
+                        )
+                        .hasRole("USER")
+
+                        .requestMatchers(
+                                "/items/itemAllList"
+                        )
+                        .hasAnyRole("USER" , "BUSINESS", "ADMIN")
 
 
                         .requestMatchers(
