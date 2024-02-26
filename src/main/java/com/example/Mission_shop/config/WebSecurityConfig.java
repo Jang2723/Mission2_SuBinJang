@@ -53,13 +53,14 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/items/register",
                                 "/items/update",
-                                "/items/delete"
+                                "/items/delete",
+                                "/items/{itemId}/offer/{offerId}/accept-refuse"
                         )
                         .hasRole("USER")
 
                         .requestMatchers(
                                 "/items/{itemId}/purchaseOffer",
-                                "/items/{itemId}/readOffer"
+                                "/items/{itemId}/offer/read"
                         )
                         .hasAnyRole("USER","BUSINESS")
 

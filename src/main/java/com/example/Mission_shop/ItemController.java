@@ -106,13 +106,10 @@ public class ItemController {
     }
 
     // 구매 제안 조회 - 물품 등록자와, 제안 등록자만
-    @GetMapping("/{itemId}/readOffer")
+    @GetMapping("/{itemId}/offer/read")
     public List<OfferDto> readOffer(
             @PathVariable("itemId") Long id
     ) throws ItemNotFoundException {
-        // 물품을 등록한 사람인지는 item id를 통해 검증
-        // 구매를 제안한 사람인지는 offer의 user id를 통해 검증
-
         // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
@@ -125,7 +122,26 @@ public class ItemController {
             // username과 password가 일치하지 않을 경우 처리
             throw new AuthenticationFailedException("Authentication failed. Invalid username or password.");
         }
+    }
 
+    // 물품 등록한 사용자 - 제안 수락, 거절
+    @PostMapping("/{itemId}/offer/{offerId}/accept-refuse")
+    public String offerAcceptRefuse(
+            @PathVariable("itemId") Long itemId,
+            @PathVariable("offerId") Long offerId,
+            @RequestParam("acceptRefuse") String acceptRefuse
+    ) {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
+            String username = userDetails.getUsername();
+
+            return itemService.offerAcceptRefuse(itemId, offerId, username, acceptRefuse);
+        } else {
+            throw new AuthenticationFailedException("Authentication failed. Invalid username or password.");
+        }
     }
 
 }

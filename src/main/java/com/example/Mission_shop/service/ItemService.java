@@ -155,4 +155,28 @@
             }
             return offerDtos;
         }
+
+        public String offerAcceptRefuse(Long itemId, Long offerId, String username, String acceptRefuse) {
+            // offer list에서 offerId에 해당하는 항목 조회
+            Optional<Offer> optionalOffer = offerRepository.findById(offerId);
+            if (optionalOffer.isPresent()) {
+                Offer offer = optionalOffer.get();
+
+                // 해당 offer에 대한 물품 조회
+                Optional<Item> optionalItem = itemRepository.findById(itemId);
+                if (optionalItem.isPresent()) {
+                    Item item = optionalItem.get();
+
+                    // 물품을 등록한 사용자와 현재 사용자가 같을 경우
+                    if (item.getUser().getUsername().equals(username)) {
+                        // acceptRefuse를 offer의 status에 저장
+                        offer.setStatus(acceptRefuse);
+                        offerRepository.save(offer); // 변경사항 저장
+                        return "Offer status updated successfully";
+                    }
+                }
+            }
+            return "Failed to update offer status: Offer not found or unauthorized";
+        }
     }
+
