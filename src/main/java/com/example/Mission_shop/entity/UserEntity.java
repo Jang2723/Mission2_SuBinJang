@@ -54,7 +54,11 @@ public class UserEntity {
     private String avatar; // 이미지
 
 
-    /*// 중고거래
+    // 중고거래
     @OneToMany(mappedBy = "user")
-    private List<Item> items = new ArrayList<>();*/
+    private List<Item> items = new ArrayList<>();
+
+    // 중고거래 구매 제안
+    @OneToMany(mappedBy = "user")
+    private List<Offer> offers = new ArrayList<>();
 }

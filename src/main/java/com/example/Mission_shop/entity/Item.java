@@ -3,6 +3,8 @@ package com.example.Mission_shop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Builder
 @Entity
@@ -21,13 +23,20 @@ public class Item {
     private Integer minimumPrice; // 최소 가격
 
     @Setter
-    private String status; // 최초 등록시 상태는 판매중
+    private String status; // 최초 등록시 상태는 판매중, 구매 제안 수락 후 판매 완료
 
     @Setter
     @ManyToOne
-    @JoinColumn(name = "user_id") // 작성자의 username을 저장하는 컬럼
+    @JoinColumn(name = "user_id") // 작성자의 ID를 저장하는 컬럼
     private UserEntity user;
 
     // 반드시 등록 필요는 없음 (지금 구현 x)
     // private String image; // 대표 이미지
+
+    // 다대일 관계 설정
+    @Setter
+    @OneToMany(mappedBy = "item")
+    private List<Offer> offers;
+
+
 }
