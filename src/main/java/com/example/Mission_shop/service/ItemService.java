@@ -178,5 +178,47 @@
             }
             return "Failed to update offer status: Offer not found or unauthorized";
         }
+
+        // 구매 확정 - 대상 물품의 상태는 판매 완료, 다른 구매 제안의 상태는 거절
+        public String offerConfirm(Long itemId, Long offerId, String username) {
+            // 해당 offerId에 해당하는 제안 조회
+            Optional<Offer> optionalOffer = offerRepository.findById(offerId);
+            if (optionalOffer.isPresent()) {
+                Offer offer = optionalOffer.get();
+
+                // 현재 사용자가 제안의 소유자인지 확인
+                if (offer.getUser().getUsername().equals(username)) {
+                    // 제안의 상태가 "수락"인지 확인
+                    if (offer.getStatus().equals("수락")) {
+                        // 제안의 상태를 "구매 확정"으로 변경
+                        offer.setStatus("구매 확정");
+                        offerRepository.save(offer); // 변경사항 저장
+
+                        // 해당 물품의 상태를 "판매 완료"로 변경
+                        Optional<Item> optionalItem = itemRepository.findById(itemId);
+                        if (optionalItem.isPresent()) {
+                            Item item = optionalItem.get();
+                            item.setStatus("판매 완료");
+                            itemRepository.save(item); // 변경사항 저장
+                        }
+
+                        // itemId는 같지만 offerId가 다른 구매 제안들의 상태를 "거절"로 변경
+                        List<Offer> otherOffers = offerRepository.findByItemIdAndIdNot(itemId, offerId);
+                        for (Offer otherOffer : otherOffers) {
+                            otherOffer.setStatus("거절");
+                            offerRepository.save(otherOffer); // 변경사항 저장
+                        }
+
+                        return "Offer confirmed successfully";
+                    } else {
+                        return "Failed to confirm offer: Offer status is not accepted";
+                    }
+                } else {
+                    return "Failed to confirm offer: Unauthorized user";
+                }
+            } else {
+                return "Failed to confirm offer: Offer not found";
+            }
+        }
     }
 

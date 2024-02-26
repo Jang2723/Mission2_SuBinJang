@@ -144,5 +144,24 @@ public class ItemController {
         }
     }
 
+    // 구매 확정 - 대상 물품의 상태는 판매 완료, 다른 구매 제안의 상태는 거절
+    @PostMapping("/{itemId}/offer/{offerId}/confirm")
+    public String offerConfirm(
+            @PathVariable("itemId") Long itemId,
+            @PathVariable("offerId") Long offerId
+    ) {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
+            String username = userDetails.getUsername();
+
+            return itemService.offerConfirm(itemId, offerId, username);
+        } else {
+            throw new AuthenticationFailedException("Authentication failed. Invalid username or password.");
+        }
+    }
+
 }
 

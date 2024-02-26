@@ -54,7 +54,8 @@ public class WebSecurityConfig {
                                 "/items/register",
                                 "/items/update",
                                 "/items/delete",
-                                "/items/{itemId}/offer/{offerId}/accept-refuse"
+                                "/items/{itemId}/offer/{offerId}/accept-refuse",
+                                "/items/{itemId}/offer/{offerId}/confirm"
                         )
                         .hasRole("USER")
 
