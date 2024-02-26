@@ -58,7 +58,8 @@ public class WebSecurityConfig {
                         .hasRole("USER")
 
                         .requestMatchers(
-                                "/items/{itemId}/purchaseOffer"
+                                "/items/{itemId}/purchaseOffer",
+                                "/items/{itemId}/readOffer"
                         )
                         .hasAnyRole("USER","BUSINESS")
 

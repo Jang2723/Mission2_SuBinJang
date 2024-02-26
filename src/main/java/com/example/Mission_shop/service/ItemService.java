@@ -13,6 +13,7 @@
     import org.springframework.stereotype.Service;
 
     import java.util.ArrayList;
+    import java.util.Collections;
     import java.util.List;
     import java.util.Optional;
 
@@ -119,5 +120,39 @@
             }else{
                 return "You cannot make an offer on your own item.";
             }
+        }
+
+        // 등록한 사용자와 제안한 사용자만 구매제안 조회, username은 토큰을 입력한 사용자의 usernmae
+        public List<OfferDto> readOffer(Long id, String username) throws ItemNotFoundException {
+            // id는 구매제안한 item id
+            // id로 물품 조회
+            Item item = itemRepository.findById(id)
+                    .orElseThrow(() -> new ItemNotFoundException("Item not found with id: " + id));
+
+            // username으로 user id 가져오기
+            UserEntity user = userRepository.findIdByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            // 물품을 등록한 사용자가 요청한 경우
+            if (item.getUser().getId().equals(user.getId())) {
+                // 물품 등록자인 경우, 해당 물품의 모든 제안 조회
+                List<Offer> offers = offerRepository.findByItemId(id);
+                if (offers.isEmpty()) {
+                    return Collections.emptyList();
+                }
+                return mapToOfferDtoList(offers);
+            } else {
+                // 구매 제안 사용자인 경우, 해당 물품에 대한 자신의 제안만 조회
+                List<Offer> offers = offerRepository.findByItemIdAndUserId(id, user.getId());
+                return mapToOfferDtoList(offers);
+            }
+        }
+
+        private List<OfferDto> mapToOfferDtoList(List<Offer> offers) {
+            List<OfferDto> offerDtos = new ArrayList<>();
+            for (Offer offer : offers) {
+                OfferDto offerDto = OfferDto.fromEntity(offer);
+                offerDtos.add(offerDto);
+            }
+            return offerDtos;
         }
     }
