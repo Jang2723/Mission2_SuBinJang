@@ -86,8 +86,8 @@ public class ShopController {
         }
     }
 
-    // 개설신청 허가/ 불허가
-    @PostMapping("/apply/acceptRefuse")
+    // 관리자 개설신청 허가/ 불허가
+    @PostMapping("/apply/open/acceptRefuse")
     public String acceptRefuse(
             @RequestBody ShopDto shopDto
     ) {
@@ -118,5 +118,13 @@ public class ShopController {
     @GetMapping("/apply/close/read")
     public List<ShopDto> applyCloseRead() {
         return shopService.applyCloseRead();
+    }
+
+    // 관리자 - 폐쇄 요청 수락
+    @PostMapping("/apply/close/acceptRefuse")
+    public String closeAcceptRefuse(
+            @RequestBody ShopDto shopDto
+    ){
+        return shopService.closeAcceptRefuse(shopDto);
     }
 }

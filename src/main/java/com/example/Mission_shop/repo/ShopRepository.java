@@ -15,5 +15,5 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     List<Shop> findByUserUsernameAndStatusIn(String username, List<String> list);
 
-    List<Shop> findByClosureStatus(String closureStatus);
+    List<Shop> findByClosureRequest(String ClosureRequest);
 }

@@ -25,11 +25,11 @@ public class ShopDto {
 
     // 쇼핑몰 상태
     @Setter
-    private String status; // 준비중, 개설 신청, 오픈
+    private String status; // 준비중, 개설 신청, 오픈, 폐쇄
 
     // 폐쇄 요청 상태: 신청, 수락
     @Setter
-    private String closureStatus;
+    private String closureRequest;
 
     // 폐쇄 요청 사유
     @Setter
@@ -37,7 +37,7 @@ public class ShopDto {
 
     // 개설 허가, 불허가 (관리자 담당)
     @Setter
-    private String acceptRefuse;
+    private String openAcceptRefuse;
 
     // 관리가자가 입력해줌, 쇼핑몰 주인이 볼 수 있도록
     @Setter
@@ -50,9 +50,9 @@ public class ShopDto {
                 .introduction(entity.getIntroduction())
                 .category(entity.getCategory())
                 .status(entity.getStatus())
-                .closureStatus(entity.getClosureStatus())
+                .closureRequest(entity.getClosureRequest())
                 .closureReason(entity.getClosureReason())
-                .acceptRefuse(entity.getAcceptRefuse())
+                .openAcceptRefuse(entity.getOpenAcceptRefuse())
                 .refuseReason(entity.getRefuseReason())
                 .build();
     }
