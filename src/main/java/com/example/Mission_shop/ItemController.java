@@ -46,7 +46,10 @@ public class ItemController {
 
     // 등록된 물품 정보 작성자 수정
     @PostMapping("/update")
-    public String updateItem(@RequestBody ItemDto itemDto){
+    public String updateItem(
+            @RequestParam String title,
+            @RequestBody ItemDto itemDto
+    ){
         // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
@@ -54,7 +57,7 @@ public class ItemController {
             // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
             String username = userDetails.getUsername();
 
-            return itemService.updateItem(itemDto, username);
+            return itemService.updateItem(itemDto, username,title);
         } else {
             // username과 password가 일치하지 않을 경우 처리
             return "Authentication failed. Invalid username or password.";
@@ -63,7 +66,9 @@ public class ItemController {
 
     // 등록한 물품 작성자가 삭제
     @PostMapping("/delete")
-    public String deleteItem (@RequestBody ItemDto itemDto){
+    public String deleteItem (
+            @RequestParam String title
+    ){
         // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
@@ -71,7 +76,7 @@ public class ItemController {
             // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
             String username = userDetails.getUsername();
 
-            return itemService.deleteItem(itemDto, username);
+            return itemService.deleteItem(title, username);
         } else {
             // username과 password가 일치하지 않을 경우 처리
             return "Authentication failed. Invalid username or password.";

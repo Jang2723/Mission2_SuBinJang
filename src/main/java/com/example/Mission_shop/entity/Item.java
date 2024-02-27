@@ -1,6 +1,7 @@
 package com.example.Mission_shop.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -28,7 +29,7 @@ public class Item {
 
     @Setter
     @Column(nullable = false)
-    @NotBlank
+    @Min(0)
     private Integer minimumPrice; // 최소 가격
 
     @Setter

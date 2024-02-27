@@ -57,34 +57,41 @@
             return itemDtoList;
         }
 
-        public String updateItem(ItemDto itemDto, String username) {
+        public String updateItem(ItemDto itemDto, String username, String title) {
             // 아이템 내용 수정
             // 아이템 엔티티를 가져옴
-            Item item = itemRepository.findById(itemDto.getId())
-                    .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemDto.getId()));
+            Optional<Item> optionalItem = itemRepository.findByTitle(title);
 
-            // 현재 사용자가 해당 아이템의 소유자인지 확인
-            if (!item.getUser().getUsername().equals(username)) {
-                return "You are not authorized to update this item.";
-            }
-
-            // 아이템 정보 수정
-            item.setTitle(itemDto.getTitle());
-            item.setDescription(itemDto.getDescription());
-            item.setMinimumPrice(itemDto.getMinimumPrice());
-
-            // 아이템 저장
-            itemRepository.save(item);
-
-            return "Item updated successfully";
-        }
-
-        public String deleteItem(ItemDto itemDto, String username) {
-            // 아이템 삭제
-            // 아이템 엔티티를 가져옴
-            Optional<Item> optionalItem = itemRepository.findById(itemDto.getId());
             if (optionalItem.isPresent()) {
                 Item item = optionalItem.get();
+
+                // 현재 사용자가 해당 아이템의 소유자인지 확인
+                if (!item.getUser().getUsername().equals(username)) {
+                    return "You are not authorized to update this item.";
+                }
+
+                // 아이템 정보 수정
+                item.setTitle(itemDto.getTitle());
+                item.setDescription(itemDto.getDescription());
+                item.setMinimumPrice(itemDto.getMinimumPrice());
+
+                // 아이템 저장
+                itemRepository.save(item);
+
+                return "Item updated successfully";
+            } else {
+                return "Item not found with title: " + title + " for user: " + username;
+            }
+        }
+
+        public String deleteItem(String  title, String username) {
+            // 아이템 삭제
+            // 아이템 엔티티를 가져옴
+            Optional<Item> optionalItem = itemRepository.findByTitle(title);
+
+            if (optionalItem.isPresent()) {
+                Item item = optionalItem.get();
+
                 // 현재 사용자가 해당 아이템의 소유자인지 확인
                 if (item.getUser().getUsername().equals(username)) {
                     // 아이템 정보 삭제
@@ -94,7 +101,7 @@
                     return "You are not authorized to delete this item.";
                 }
             } else {
-                return "Item not found with id: " + itemDto.getId();
+                return "Item not found with title: " + title;
             }
         }
 

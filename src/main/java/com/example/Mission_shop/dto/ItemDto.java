@@ -2,6 +2,7 @@ package com.example.Mission_shop.dto;
 
 import com.example.Mission_shop.entity.Item;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -25,7 +26,7 @@ public class ItemDto {
 
     @Setter
     @Column(nullable = false)
-    @NotBlank
+    @Min(0)
     private Integer minimumPrice; // 최소 가격
 
     @Setter
