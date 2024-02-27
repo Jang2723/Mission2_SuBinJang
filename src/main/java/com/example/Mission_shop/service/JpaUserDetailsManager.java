@@ -207,29 +207,6 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     }
 
 
-    // 중고거래 (일반 사용자)
-//    public void createTrade*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public boolean userExists(String username) {
         return userRepository.existsByUsername(username);

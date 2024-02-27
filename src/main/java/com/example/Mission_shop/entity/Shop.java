@@ -1,7 +1,6 @@
 package com.example.Mission_shop.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -19,20 +18,14 @@ public class Shop {
 
     // 쇼핑몰 이름
     @Setter
-    @Column(nullable = false)
-    @NotBlank
     private String name;
 
     // 쇼핑몰 소개
     @Setter
-    @Column(nullable = false)
-    @NotBlank
     private String introduction;
 
     // 소핑몰 분류 (최소 5개 : 의류, 뷰티, 스포츠 용품, 식품, 도서 )
     @Setter
-    @Column(nullable = false)
-    @NotBlank
     private String category;
 
     // 쇼핑몰 상태

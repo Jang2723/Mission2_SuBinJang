@@ -1,7 +1,9 @@
 package com.example.Mission_shop;
 
 import com.example.Mission_shop.entity.CustomUserDetails;
+import com.example.Mission_shop.entity.Shop;
 import com.example.Mission_shop.entity.UserEntity;
+import com.example.Mission_shop.repo.ShopRepository;
 import com.example.Mission_shop.repo.UserRepository;
 import com.example.Mission_shop.service.JpaUserDetailsManager;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class UserController {
     private final JpaUserDetailsManager userDetailsManager; // JpaUserDetailsManager로 수정
 
     private final UserRepository userRepository;
+    private final ShopRepository shopRepository;
 
 
     // 회원가입
@@ -153,6 +156,14 @@ public class UserController {
         // 권한 authorities 업데이트
         if (acceptRefuse.equals("ACCEPT")) {
             userEntity.setAuthorities("ROLE_BUSINESS");
+
+            // 새 쇼핑몰 생성
+            Shop shop = new Shop();
+            shop.setUser(userEntity);
+            shop.setStatus("준비중");
+
+            // 새 쇼핑몰 저장
+            shopRepository.save(shop);
         }
 
         // 엔티티 저장
