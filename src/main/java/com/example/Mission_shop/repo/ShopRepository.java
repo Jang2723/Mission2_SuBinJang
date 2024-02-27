@@ -14,4 +14,6 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     Optional<Shop> findByName(String name);
 
     List<Shop> findByUserUsernameAndStatusIn(String username, List<String> list);
+
+    List<Shop> findByClosureStatus(String closureStatus);
 }

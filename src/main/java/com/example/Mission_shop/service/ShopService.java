@@ -141,4 +141,22 @@ public class ShopService {
             return "폐쇄 요청 실패." + username+"의 쇼핑몰을 찾을 수 없습니다.";
         }
     }
+
+    // 관리자 - 폐쇄 요청 확인
+    public List<ShopDto> applyCloseRead() {
+        String closureStatus = "폐쇄 요청";
+
+        // 폐쇄 요청 상태인 쇼핑몰 목록 조회
+        List<Shop> shopList = shopRepository.findByClosureStatus(closureStatus);
+
+        // 각 쇼핑몰을 ShopDto로 변환하여 저장할 리스트 생성
+        List<ShopDto> shopDtoList = new ArrayList<>();
+
+        // 각 쇼핑몰을 ShopDto로 변환하여 리스트에 추가
+        for (Shop shop : shopList) {
+            shopDtoList.add(ShopDto.fromEntity(shop));
+        }
+
+        return shopDtoList;
+    }
 }

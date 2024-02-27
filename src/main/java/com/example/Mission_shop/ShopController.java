@@ -96,7 +96,7 @@ public class ShopController {
 
     // 쇼핑몰 폐쇄 신청
     @PostMapping("/apply/close")
-    public String shopApplyClose(
+    public String ApplyClose(
             @RequestBody ShopDto shopDto
     ) {
         // 쇼핑몰을 개설한 사용자의 정보를 가져오고 그 쇼핑몰의 정보와 사용자가 일치하면 폐쇄요청 성공
@@ -112,6 +112,11 @@ public class ShopController {
             // username과 password가 일치하지 않을 경우 처리
             return "Authentication failed. Invalid username or password.";
         }
+    }
 
+    // 관리자 - 폐쇄 요청 확인
+    @GetMapping("/apply/close/read")
+    public List<ShopDto> applyCloseRead() {
+        return shopService.applyCloseRead();
     }
 }
