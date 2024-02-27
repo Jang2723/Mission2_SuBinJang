@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -60,5 +62,22 @@ public class ShopService {
         } else {
             return "Shop not found for username: " + username;
         }
+    }
+
+    // 관리자가 개설신청 쇼핑몰 목록 읽기
+    public List<ShopDto> applyRead() {
+        // 쇼핑몰 개설 신청 목록 가져와서 리스트로 저장
+        String status = "개설 신청";
+        List<Shop> shopList = shopRepository.findByStatus(status);
+
+        // 각 쇼핑몰을 ShopDto로 변환하여 저장할 리스트 생성
+        List<ShopDto> shopDtoList = new ArrayList<>();
+
+        // 각 쇼핑몰을 ShopDto로 변환하여 리스트에 추가
+        for (Shop shop : shopList) {
+            shopDtoList.add(ShopDto.fromEntity(shop));
+        }
+
+        return shopDtoList;
     }
 }

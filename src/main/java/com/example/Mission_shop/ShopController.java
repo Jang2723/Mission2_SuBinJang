@@ -1,16 +1,16 @@
 package com.example.Mission_shop;
 
 import com.example.Mission_shop.dto.ShopDto;
+import com.example.Mission_shop.exception.AuthenticationFailedException;
 import com.example.Mission_shop.service.ShopService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -56,5 +56,18 @@ public class ShopController {
         }
     }
 
-    //
+    // 관리자 개설 신청된 쇼핑몰 목록 확인
+    @GetMapping("/apply/read")
+    public List<ShopDto> applyRead() {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            return shopService.applyRead();
+        }else {
+            // 인증되지 않은 경우 에러 처리
+            throw new AuthenticationFailedException("Authentication required.");
+        }
+    }
+
+    // 개설신청 허가/ 불허가
 }

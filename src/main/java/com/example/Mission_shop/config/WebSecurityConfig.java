@@ -81,7 +81,8 @@ public class WebSecurityConfig {
 
                         .requestMatchers(
                                 "/users/admin/applyList",
-                                "/users/admin/apply/accept-refuse"
+                                "/users/admin/apply/accept-refuse",
+                                "/shops/apply/read"
                         )
                         .hasRole("ADMIN")
                 )
