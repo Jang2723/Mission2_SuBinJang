@@ -73,7 +73,8 @@ public class WebSecurityConfig {
 
                         // 쇼핑몰
                         .requestMatchers(
-                                "/shops/register"
+                                "/shops/register",
+                                "/shops/update"
                         )
                         .hasRole("BUSINESS")
 

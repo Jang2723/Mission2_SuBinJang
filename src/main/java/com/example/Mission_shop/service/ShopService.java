@@ -7,6 +7,9 @@ import com.example.Mission_shop.repo.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,4 +33,24 @@ public class ShopService {
         return "Shop registered successfully";
     }
 
+    public String updateShop (ShopDto shopDto, String username) {
+        // username을 사용하여 사용자의 쇼핑몰을 찾음
+        Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
+
+        if (optionalShop.isPresent()) {
+            Shop shop = optionalShop.get();
+
+            // 쇼핑몰 정보 수정
+            shop.setName(shopDto.getName());
+            shop.setIntroduction(shopDto.getIntroduction());
+            shop.setCategory(shopDto.getCategory());
+
+            // 저장
+            shopRepository.save(shop);
+
+            return "Shop updated successfully";
+        } else {
+            return "Shop not found for username: " + username;
+        }
+    }
 }
