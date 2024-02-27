@@ -20,7 +20,7 @@ public class ShopService {
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
 
-    public String updateShop (ShopDto shopDto, String username) {
+    public String updateShop(ShopDto shopDto, String username) {
         // username을 사용하여 사용자의 쇼핑몰을 찾음
         Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
 
@@ -41,7 +41,7 @@ public class ShopService {
         }
     }
 
-    public String shopOpenApply (String username) {
+    public String shopApplyOpen(String username) {
         // username을 사용하여 사용자의 쇼핑몰을 찾음
         Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
 
@@ -49,9 +49,9 @@ public class ShopService {
             Shop shop = optionalShop.get();
 
             // name, introduction, category가 모두 null이 아니고 비어있지 않은 경우에만 개설 신청 상태로 변경
-            if (shop.getName() != null && !shop.getName() .isEmpty()
-                && shop.getIntroduction() != null && !shop.getIntroduction().isEmpty()
-                && shop.getCategory() != null && !shop.getCategory().isEmpty()) {
+            if (shop.getName() != null && !shop.getName().isEmpty()
+                    && shop.getIntroduction() != null && !shop.getIntroduction().isEmpty()
+                    && shop.getCategory() != null && !shop.getCategory().isEmpty()) {
 
                 shop.setStatus("개설 신청");
                 shopRepository.save(shop);
@@ -90,7 +90,7 @@ public class ShopService {
         return shopDtoList;
     }
 
-    public String acceptRefuse(ShopDto shopDto){
+    public String acceptRefuse(ShopDto shopDto) {
         // shop name으로 쇼핑몰을 찾음
         Optional<Shop> optionalShop = shopRepository.findByName(shopDto.getName());
 
@@ -98,15 +98,15 @@ public class ShopService {
             Shop shop = optionalShop.get();
 
             // status가 개설 신청일 경우 허가 또는 불허
-            if (shop.getStatus().equals("개설 신청")){
+            if (shop.getStatus().equals("개설 신청")) {
                 // 허가
-                if(shopDto.getAcceptRefuse().equals("허가")){
+                if (shopDto.getAcceptRefuse().equals("허가")) {
                     shop.setAcceptRefuse(shopDto.getAcceptRefuse());
                     shop.setRefuseReason(null);
                     shop.setStatus("오픈");
                 }
                 // 불허, 불허일 경우 이유도 작성
-                else if(shopDto.getAcceptRefuse().equals("불허")){
+                else if (shopDto.getAcceptRefuse().equals("불허")) {
                     shop.setAcceptRefuse(shopDto.getAcceptRefuse());
                     shop.setRefuseReason(shopDto.getRefuseReason());
                     shopRepository.save(shop);
@@ -115,8 +115,30 @@ public class ShopService {
             }
             shopRepository.save(shop);
             return "쇼핑몰 허가 완료";
-        }else{
+        } else {
             return "Shop not found for shop name: " + shopDto.getName();
+        }
+    }
+
+    public String shopApplyClose(String username, ShopDto shopDto) {
+        // shop name으로 쇼핑몰을 찾음
+        Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
+
+        // shop이 존재한다면 폐쇄요청 신청
+        if (optionalShop.isPresent()) {
+            Shop shop = optionalShop.get();
+
+            // 폐쇄 요청 사유 없으면 실패
+            if (shopDto.getClosureReason() == null || shopDto.getClosureReason().isEmpty()) {
+                return "폐쇄 요청 실패. 폐쇄 사유를 작성해야 합니다.";
+            }
+
+            shop.setClosureStatus("폐쇄 요청");
+            shop.setClosureReason(shopDto.getClosureReason());
+            shopRepository.save(shop);
+            return "폐쇄 요청 완료";
+        } else {
+            return "폐쇄 요청 실패." + username+"의 쇼핑몰을 찾을 수 없습니다.";
         }
     }
 }

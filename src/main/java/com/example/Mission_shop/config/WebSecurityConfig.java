@@ -74,7 +74,8 @@ public class WebSecurityConfig {
                         // 쇼핑몰
                         .requestMatchers(
                                 "/shops/update",
-                                "/shops/openApply"
+                                "/shops/apply/open",
+                                "/shops/apply/close"
                         )
                         .hasRole("BUSINESS")
 

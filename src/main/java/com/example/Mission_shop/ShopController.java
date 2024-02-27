@@ -40,8 +40,8 @@ public class ShopController {
     }
 
     // 쇼핑몰 개설 신청
-    @PostMapping("/openApply")
-    public String shopOpenApply (){
+    @PostMapping("/apply/open")
+    public String shopApplyOpen (){
         // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
@@ -49,7 +49,7 @@ public class ShopController {
             // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
             String username = userDetails.getUsername();
 
-            return shopService.shopOpenApply(username);
+            return shopService.shopApplyOpen(username);
         } else {
             // username과 password가 일치하지 않을 경우 처리
             return "Authentication failed. Invalid username or password.";
@@ -92,5 +92,26 @@ public class ShopController {
             @RequestBody ShopDto shopDto
     ) {
         return shopService.acceptRefuse(shopDto);
+    }
+
+    // 쇼핑몰 폐쇄 신청
+    @PostMapping("/apply/close")
+    public String shopApplyClose(
+            @RequestBody ShopDto shopDto
+    ) {
+        // 쇼핑몰을 개설한 사용자의 정보를 가져오고 그 쇼핑몰의 정보와 사용자가 일치하면 폐쇄요청 성공
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
+            String username = userDetails.getUsername();
+
+            return shopService.shopApplyClose(username, shopDto);
+        } else {
+            // username과 password가 일치하지 않을 경우 처리
+            return "Authentication failed. Invalid username or password.";
+        }
+
     }
 }
