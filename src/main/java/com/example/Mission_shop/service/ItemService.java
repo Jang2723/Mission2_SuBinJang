@@ -5,6 +5,7 @@
     import com.example.Mission_shop.entity.Item;
     import com.example.Mission_shop.entity.Offer;
     import com.example.Mission_shop.entity.UserEntity;
+    import com.example.Mission_shop.exception.ItemNotFoundException;
     import com.example.Mission_shop.repo.ItemRepository;
     import com.example.Mission_shop.repo.OfferRepository;
     import com.example.Mission_shop.repo.UserRepository;

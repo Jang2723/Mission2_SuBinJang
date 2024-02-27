@@ -71,6 +71,13 @@ public class WebSecurityConfig {
                         .hasAnyRole("USER" , "BUSINESS", "ADMIN")
 
 
+                        // 쇼핑몰
+                        .requestMatchers(
+                                "/shops/register"
+                        )
+                        .hasRole("BUSINESS")
+
+
                         .requestMatchers(
                                 "/users/admin/applyList",
                                 "/users/admin/apply/accept-refuse"

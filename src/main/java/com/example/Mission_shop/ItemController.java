@@ -2,21 +2,16 @@ package com.example.Mission_shop;
 
 import com.example.Mission_shop.dto.ItemDto;
 import com.example.Mission_shop.dto.OfferDto;
-import com.example.Mission_shop.entity.Item;
-import com.example.Mission_shop.repo.ItemRepository;
-import com.example.Mission_shop.repo.UserRepository;
-import com.example.Mission_shop.service.ItemNotFoundException;
+import com.example.Mission_shop.exception.AuthenticationFailedException;
+import com.example.Mission_shop.exception.ItemNotFoundException;
 import com.example.Mission_shop.service.ItemService;
-import com.example.Mission_shop.service.JpaUserDetailsManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -25,8 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-
-
 
     @PostMapping("/register")
     public String registerItem(@RequestBody ItemDto itemDto) {

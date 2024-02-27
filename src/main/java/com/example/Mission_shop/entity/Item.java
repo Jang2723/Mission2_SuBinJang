@@ -1,6 +1,7 @@
 package com.example.Mission_shop.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -16,10 +17,18 @@ public class Item {
     private Long id;
 
     @Setter
+    @Column(nullable = false)
+    @NotBlank
     private String title; // 제목
+
     @Setter
+    @Column(nullable = false)
+    @NotBlank
     private String description; // 설명
+
     @Setter
+    @Column(nullable = false)
+    @NotBlank
     private Integer minimumPrice; // 최소 가격
 
     @Setter

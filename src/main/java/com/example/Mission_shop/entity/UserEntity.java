@@ -61,4 +61,8 @@ public class UserEntity {
     // 중고거래 구매 제안
     @OneToMany(mappedBy = "user")
     private List<Offer> offers = new ArrayList<>();
+
+    // 쇼핑몰 소유자
+    @OneToMany(mappedBy = "user")
+    private List<Shop> ownedShops = new ArrayList<>();
 }
