@@ -73,7 +73,6 @@ public class WebSecurityConfig {
 
                         // 쇼핑몰
                         .requestMatchers(
-                                "/shops/register",
                                 "/shops/update",
                                 "/shops/openApply"
                         )

@@ -18,21 +18,6 @@ public class ShopService {
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
 
-    public String registerShop (ShopDto shopDto, String username) {
-        // shop 등록 처리
-        Shop shop = new Shop();
-        shop.setName(shopDto.getName());
-        shop.setIntroduction(shopDto.getIntroduction());
-        shop.setCategory(shopDto.getCategory());
-        shop.setStatus("준비중");
-        shop.setUser(userRepository.findIdByUsername(username).orElse(null));
-
-        // shop 준비 신청
-        shopRepository.save(shop);
-
-        return "Shop registered successfully";
-    }
-
     public String updateShop (ShopDto shopDto, String username) {
         // username을 사용하여 사용자의 쇼핑몰을 찾음
         Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
@@ -61,10 +46,17 @@ public class ShopService {
         if (optionalShop.isPresent()) {
             Shop shop = optionalShop.get();
 
-            shop.setStatus("개설 신청");
+            // name, introduction, category가 모두 null이 아니고 비어있지 않은 경우에만 개설 신청 상태로 변경
+            if (shop.getName() != null && !shop.getName() .isEmpty()
+                && shop.getIntroduction() != null && !shop.getIntroduction().isEmpty()
+                && shop.getCategory() != null && !shop.getCategory().isEmpty()) {
 
-            shopRepository.save(shop);
-            return "쇼핑몰 개설 신청이 완료되었습니다.";
+                shop.setStatus("개설 신청");
+                shopRepository.save(shop);
+                return "쇼핑몰 개설 신청이 완료되었습니다.";
+            } else {
+                return "Name, introduction, category should not be null or empty.";
+            }
         } else {
             return "Shop not found for username: " + username;
         }
