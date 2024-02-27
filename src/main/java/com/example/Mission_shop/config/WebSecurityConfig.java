@@ -82,9 +82,14 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/users/admin/applyList",
                                 "/users/admin/apply/accept-refuse",
-                                "/shops/apply/read"
+                                "/shops/apply/acceptRefuse"
                         )
                         .hasRole("ADMIN")
+
+                        .requestMatchers(
+                                "/shops/apply/read"
+                        )
+                        .hasAnyRole("BUSINESS","ADMIN")
                 )
                 // JWT를 사용하기 때문에 보안 관련 세션 헤제
                 .sessionManagement(session -> session

@@ -30,7 +30,7 @@ public class Shop {
 
     // 쇼핑몰 상태
     @Setter
-    private String status; // 준비중,개설 신청 ,오픈
+    private String status; // 준비중,개설 신청 , 오픈
 
     // 폐쇄 요청 상태: 신청, 수락, 거절
     @Setter
@@ -39,6 +39,10 @@ public class Shop {
     // 폐쇄 요청 사유
     @Setter
     private String closureReason;
+
+    // 개설 허가, 불허가 (관리자 담당)
+    @Setter
+    private String acceptRefuse;
 
     // 관리가자가 입력해줌, 쇼핑몰 주인이 볼 수 있도록
     @Setter

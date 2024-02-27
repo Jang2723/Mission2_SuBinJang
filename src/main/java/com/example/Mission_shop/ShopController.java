@@ -56,18 +56,41 @@ public class ShopController {
         }
     }
 
-    // 관리자 개설 신청된 쇼핑몰 목록 확인
+    // 관리자, 개설 신청자(자기 쇼핑몰) - 개설 신청된 쇼핑몰 목록 확인
     @GetMapping("/apply/read")
     public List<ShopDto> applyRead() {
         // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            return shopService.applyRead();
-        }else {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            // 사용자 ROLE 확인
+            if (userDetails.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
+
+                // ROLE이 ADMIN일 경우 바로 목록 조회
+                String username = "admin";
+                return shopService.applyRead(username);
+            }
+            else if (userDetails.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_BUSINESS"))) {
+
+                // ROLE이 BUSINESS일 경우 자기 쇼핑몰만 조회
+                String username = userDetails.getUsername();
+                return shopService.applyRead(username);
+            } else {
+                // 다른 권한을 가진 경우 처리
+                throw new AuthenticationFailedException("Unauthorized access.");
+            }
+        } else {
             // 인증되지 않은 경우 에러 처리
             throw new AuthenticationFailedException("Authentication required.");
         }
     }
 
     // 개설신청 허가/ 불허가
+    @PostMapping("/apply/acceptRefuse")
+    public String acceptRefuse(
+            @RequestBody ShopDto shopDto
+    ) {
+        return shopService.acceptRefuse(shopDto);
+    }
 }
