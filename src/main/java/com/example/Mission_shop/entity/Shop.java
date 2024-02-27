@@ -37,7 +37,7 @@ public class Shop {
 
     // 쇼핑몰 상태
     @Setter
-    private String status; // 준비중, 오픈
+    private String status; // 준비중,개설 신청 ,오픈
 
     // 폐쇄 요청 상태: 신청, 수락, 거절
     @Setter

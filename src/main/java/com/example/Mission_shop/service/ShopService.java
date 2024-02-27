@@ -53,4 +53,20 @@ public class ShopService {
             return "Shop not found for username: " + username;
         }
     }
+
+    public String shopOpenApply (String username) {
+        // username을 사용하여 사용자의 쇼핑몰을 찾음
+        Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
+
+        if (optionalShop.isPresent()) {
+            Shop shop = optionalShop.get();
+
+            shop.setStatus("개설 신청");
+
+            shopRepository.save(shop);
+            return "쇼핑몰 개설 신청이 완료되었습니다.";
+        } else {
+            return "Shop not found for username: " + username;
+        }
+    }
 }
