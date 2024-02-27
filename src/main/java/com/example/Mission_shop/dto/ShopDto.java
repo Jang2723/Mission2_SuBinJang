@@ -27,7 +27,7 @@ public class ShopDto {
     @Setter
     private String status; // 준비중, 개설 신청, 오픈
 
-    // 폐쇄 요청 상태: 신청, 수락, 거절
+    // 폐쇄 요청 상태: 신청, 수락
     @Setter
     private String closureStatus;
 
