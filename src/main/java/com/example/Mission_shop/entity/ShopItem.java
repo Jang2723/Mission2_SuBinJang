@@ -69,5 +69,5 @@ public class ShopItem {
 
     // 상품을 주문한 주문 목록
     @OneToMany(mappedBy = "shopItem")
-    private List<Order> orders = new ArrayList<>();
+    private List<OrderShopItem> orderShopItems = new ArrayList<>();
 }

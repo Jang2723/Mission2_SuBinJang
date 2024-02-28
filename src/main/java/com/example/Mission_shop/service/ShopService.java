@@ -1,23 +1,24 @@
 package com.example.Mission_shop.service;
 
 import com.example.Mission_shop.dto.ShopDto;
+import com.example.Mission_shop.entity.OrderShopItem;
 import com.example.Mission_shop.entity.Shop;
 import com.example.Mission_shop.entity.ShopCategory;
+import com.example.Mission_shop.repo.OrderShopItemRepository;
 import com.example.Mission_shop.repo.ShopRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class ShopService {
     private final ShopRepository shopRepository;
+    private final OrderShopItemRepository orderShopItemRepository;
 
     public String updateShop(ShopDto shopDto, String username) {
         // username을 사용하여 사용자의 쇼핑몰을 찾음
@@ -191,6 +192,52 @@ public class ShopService {
             }
         } else {
             return "존재하지 않는 스토어입니다.";
+        }
+    }
+
+    // 쇼핑몰 조회
+    public List<ShopDto> searchShop(String name, ShopCategory category) {
+        // 1. 이름과 카테고리로 쇼핑몰 검색 
+        if (name != null && category != null) {
+            List<Shop> shops = shopRepository.findByNameAndCategory(name, category);
+            return shops.stream()
+                    .map(ShopDto::fromEntity) // 올바른 방법으로 수정
+                    .collect(Collectors.toList());
+        }
+        // 2. 이름으로 쇼핑몰 검색 - 성공
+        else if (name != null) {
+            Optional<List<ShopDto>> shopDtoList = shopRepository.findByName(name)
+                    .map(shop -> {
+                        List<ShopDto> shopDtos = new ArrayList<>();
+                        shopDtos.add(ShopDto.fromEntity(shop));
+                        return shopDtos;
+                    });
+            return shopDtoList.orElse(Collections.emptyList());
+        }
+        // 3. 카테고리로 쇼핑몰 검색 -성공
+        else if (category != null) {
+            return shopRepository.findByCategory(category)
+                    .stream()
+                    .map(ShopDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
+        // 4. 주문 시간(dateTime)을 기준으로 최근 주문 목록 조회
+        else {
+            List<OrderShopItem> recentOrderShopItems = orderShopItemRepository.findAllByOrderByDateTimeDesc();
+
+            // 주문이 존재하는 경우 해당 주문에 매핑된 쇼핑몰 반환
+            if (!recentOrderShopItems.isEmpty()) {
+                return recentOrderShopItems.stream()
+                        .map(orderShopItemEntity -> ShopDto.fromEntity(orderShopItemEntity.getShopItem().getShop()))
+                        .collect(Collectors.toList());
+            }
+            // 5. 주문이 없는 경우 모든 쇼핑몰 반환
+            else {
+                return shopRepository.findAll()
+                        .stream()
+                        .map(ShopDto::fromEntity)
+                        .collect(Collectors.toList());
+            }
         }
     }
 }

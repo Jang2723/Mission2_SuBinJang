@@ -38,17 +38,22 @@ public class ShopDto {
     // 관리가자가 입력해줌, 쇼핑몰 주인이 볼 수 있도록
     private String refuseReason;
 
-    public static ShopDto fromEntity (Shop entity) {
+    public static ShopDto fromEntity(Shop shop) {
+        if (shop == null) {
+            return null; // 또는 적절한 기본값 반환
+        }
+
         return ShopDto.builder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .introduction(entity.getIntroduction())
-                .category(entity.getCategory() != null ? entity.getCategory().toString() : null)
-                .status(entity.getStatus())
-                .closureRequest(entity.getClosureRequest())
-                .closureReason(entity.getClosureReason())
-                .openAcceptRefuse(entity.getOpenAcceptRefuse())
-                .refuseReason(entity.getRefuseReason())
+                .id(shop.getId())
+                .name(shop.getName())
+                .introduction(shop.getIntroduction())
+                .category(shop.getCategory() != null ? shop.getCategory().toString() : null)
+                .status(shop.getStatus())
+                .closureRequest(shop.getClosureRequest())
+                .closureReason(shop.getClosureReason())
+                .openAcceptRefuse(shop.getOpenAcceptRefuse())
+                .refuseReason(shop.getRefuseReason())
                 .build();
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.Mission_shop;
 
 import com.example.Mission_shop.dto.ShopDto;
+import com.example.Mission_shop.entity.ShopCategory;
 import com.example.Mission_shop.exception.AuthenticationFailedException;
 import com.example.Mission_shop.service.ShopService;
 import lombok.RequiredArgsConstructor;
@@ -126,5 +127,17 @@ public class ShopController {
             @RequestBody ShopDto shopDto
     ){
         return shopService.closeAcceptRefuse(shopDto);
+    }
+
+    // 쇼핑몰 조회
+    @GetMapping("/search")
+    public List<ShopDto> searchShop (
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) ShopCategory category
+    ) {
+        // 조건 (이름 , 쇼핑몰 분류(category))
+        // 1. 조건 없이 조회할 경우,  가장 최근 거래가 있던 쇼핑몰 순서로 조회
+        // 2. 조건이 있을 경우 조건으로 쇼핑몰 검색
+        return shopService.searchShop(name, category);
     }
 }
