@@ -1,6 +1,9 @@
 package com.example.Mission_shop.dto;
 
 import com.example.Mission_shop.entity.Shop;
+import com.example.Mission_shop.entity.ShopCategory;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 
 @Getter
@@ -48,7 +51,7 @@ public class ShopDto {
                 .id(entity.getId())
                 .name(entity.getName())
                 .introduction(entity.getIntroduction())
-                .category(entity.getCategory())
+                .category(entity.getCategory() != null ? entity.getCategory().toString() : null)
                 .status(entity.getStatus())
                 .closureRequest(entity.getClosureRequest())
                 .closureReason(entity.getClosureReason())

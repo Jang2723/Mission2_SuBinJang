@@ -2,6 +2,7 @@ package com.example.Mission_shop.service;
 
 import com.example.Mission_shop.dto.ShopDto;
 import com.example.Mission_shop.entity.Shop;
+import com.example.Mission_shop.entity.ShopCategory;
 import com.example.Mission_shop.repo.ShopRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,18 @@ public class ShopService {
             // 쇼핑몰 정보 수정
             shop.setName(shopDto.getName());
             shop.setIntroduction(shopDto.getIntroduction());
-            shop.setCategory(shopDto.getCategory());
+
+            // category가 null이 아니고 빈 문자열이 아니며, enum 값 중 하나와 일치하는지 확인
+            if (shopDto.getCategory() != null && !shopDto.getCategory().isEmpty()) {
+                try {
+                    ShopCategory category = ShopCategory.valueOf(shopDto.getCategory());
+                    shop.setCategory(category);
+                } catch (IllegalArgumentException e) {
+                    return "지원하지 않는 카테고리입니다.";
+                }
+            } else {
+                return "카테고리는 필수 입력 항목입니다.";
+            }
 
             // 저장
             shopRepository.save(shop);
@@ -49,7 +61,7 @@ public class ShopService {
             // name, introduction, category가 모두 null이 아니고 비어있지 않은 경우에만 개설 신청 상태로 변경
             if (shop.getName() != null && !shop.getName().isEmpty()
                     && shop.getIntroduction() != null && !shop.getIntroduction().isEmpty()
-                    && shop.getCategory() != null && !shop.getCategory().isEmpty()) {
+                    && shop.getCategory() != null) {
 
                 shop.setStatus("개설 신청");
                 shopRepository.save(shop);
