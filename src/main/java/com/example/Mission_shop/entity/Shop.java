@@ -3,6 +3,9 @@ package com.example.Mission_shop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
 @Entity
@@ -50,4 +53,8 @@ public class Shop {
     @ManyToOne
     @JoinColumn(name = "user_id") // 작성자의 ID를 저장하는 컬럼
     private UserEntity user;
+
+    @Setter
+    @OneToMany(mappedBy = "shop")
+    private List<ShopItem> shopItemList = new ArrayList<>();
 }
