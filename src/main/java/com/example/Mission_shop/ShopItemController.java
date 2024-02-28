@@ -53,6 +53,24 @@ public class ShopItemController {
             // username과 password가 일치하지 않을 경우 처리
             return "Authentication failed. Invalid username or password.";
         }
+    }
 
+    // 상품 삭제
+    @PostMapping("/delete")
+    public String deleteShopItem (
+            @RequestParam String name
+    ) {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
+            String username = userDetails.getUsername();
+
+            return shopItemService.deleteShopItem(name, username);
+        } else {
+            // username과 password가 일치하지 않을 경우 처리
+            return "Authentication failed. Invalid username or password.";
+        }
     }
 }

@@ -81,7 +81,30 @@ public class ShopItemService {
         } else {
             return "사용자의 상점을 찾을 수 없습니다.";
         }
+    }
 
+    // 쇼핑몰 상품 삭제
+    public String deleteShopItem (String name, String username) {
+        // name은 shptiem의 이름, username은 shop의 소유자
+        // 사용자 이름을 기반으로 해당 사용자의 쇼핑몰을 찾음
+        Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
+
+        if (optionalShop.isPresent()) {
+            // 쇼핑몰을 찾음
+            Shop shop = optionalShop.get();
+            // 쇼핑몰에 속한 상품을 찾아서 삭제
+            Optional<ShopItem> optionalShopItem = shopItemRepository.findByShopAndName(shop, name);
+            if (optionalShopItem.isPresent()) {
+                // 상품을 찾고 삭제
+                ShopItem shopItem = optionalShopItem.get();
+                shopItemRepository.delete(shopItem);
+                return "쇼핑몰 상품 삭제 완료";
+            } else {
+                return "해당 이름의 상품을 찾을 수 없습니다.";
+            }
+        } else {
+            return "해당 사용자의 쇼핑몰을 찾을 수 없습니다.";
+        }
     }
 
 }
