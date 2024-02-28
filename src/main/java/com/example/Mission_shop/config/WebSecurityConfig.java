@@ -76,8 +76,9 @@ public class WebSecurityConfig {
                                 "/shops/update",
                                 "/shops/apply/open",
                                 "/shops/apply/close",
-                                // 쇼핑몰 상품 등록
-                                "/shop/items/register"
+                                // 쇼핑몰 상품
+                                "/shop/items/register",
+                                "/shop/items/update"
                         )
                         .hasRole("BUSINESS")
 
