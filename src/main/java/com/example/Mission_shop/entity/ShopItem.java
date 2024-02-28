@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
 @Entity
@@ -63,4 +66,8 @@ public class ShopItem {
     @ManyToOne
     @JoinColumn(name = "shop_id") // shop id
     private Shop shop;
+
+    // 상품을 주문한 주문 목록
+    @OneToMany(mappedBy = "shopItem")
+    private List<Order> orders = new ArrayList<>();
 }

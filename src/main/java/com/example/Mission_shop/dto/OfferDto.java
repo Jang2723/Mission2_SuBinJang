@@ -9,13 +9,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OfferDto {
-    @Setter
     private Long id;
-    @Setter
+
     private Integer offerPrice;
-    @Setter
     private String status; // 구매 제안 상태 : 제안, 수락, 거절, 확정
-    @Setter
     private Long itemId; // Item ID
 
     public static OfferDto fromEntity(Offer entity) {
