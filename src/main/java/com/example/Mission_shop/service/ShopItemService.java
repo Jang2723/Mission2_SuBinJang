@@ -218,6 +218,12 @@ public class ShopItemService {
             // 송금할 금액과 주문 내역의 총 주문 금액 비교
             if (totalPrice.equals(totalOrderPrice)) {
                 // 금액이 일치할 경우 송금 성공
+                // username으로 orderShopItem에서 주문 내역 찾기
+                // totalPrice 저장
+                for (OrderShopItem orderShopItem : orderList) {
+                    orderShopItem.setTotalPrice(totalPrice);
+                    orderShopItemRepository.save(orderShopItem);
+                }
                 return "금액을 보냈습니다.";
             } else {
                 // 금액이 일치하지 않을 경우
