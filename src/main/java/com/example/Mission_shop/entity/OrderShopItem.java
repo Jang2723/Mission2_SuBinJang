@@ -26,7 +26,6 @@ public class OrderShopItem {
     private Integer amount;
 
     @Setter
-    @Column(nullable = false)
     private Integer totalPrice;
 
     @Setter

@@ -86,4 +86,16 @@ public class ShopItemController {
     ) {
         return shopItemService.searchShopItem(name, minPrice, maxPrice);
     }
+
+    // 쇼핑몰 상품 구매 요청
+    @PostMapping("/buyRequest")
+    public String buyRequestShopItem(
+            @RequestParam String name,
+            @RequestParam Integer amount
+    ) {
+        // 상품(name)과 구매 수량을(amount) 기준으로 구매 요청
+        return shopItemService.buyRequest(name, amount);
+    }
+    
+    // username으로 주문 찾고 주문이 있으면 금액 전송
 }

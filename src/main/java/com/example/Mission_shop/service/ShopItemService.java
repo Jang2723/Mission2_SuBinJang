@@ -2,20 +2,23 @@ package com.example.Mission_shop.service;
 
 import com.example.Mission_shop.dto.ItemDto;
 import com.example.Mission_shop.dto.ShopItemDto;
-import com.example.Mission_shop.entity.Item;
-import com.example.Mission_shop.entity.Shop;
-import com.example.Mission_shop.entity.ShopItem;
+import com.example.Mission_shop.entity.*;
+import com.example.Mission_shop.repo.OrderShopItemRepository;
 import com.example.Mission_shop.repo.ShopItemRepository;
 import com.example.Mission_shop.repo.ShopRepository;
+import com.example.Mission_shop.repo.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,6 +26,8 @@ import java.util.stream.Collectors;
 public class ShopItemService {
     private final ShopItemRepository shopItemRepository;
     private final ShopRepository shopRepository;
+    private final OrderShopItemRepository orderShopItemRepository;
+    private final UserRepository userRepository;
 
     public String registerShopItem (ShopItemDto shopItemDto, String username) {
         // 사용자 이름으로 상점을 찾음
@@ -144,4 +149,57 @@ public class ShopItemService {
         return result;
     }
 
+    // 쇼핑몰 상품 구매 요청
+    public String buyRequest(String name, Integer amount) {
+        // shopItem 에서 name과 amount로 검색,
+        // 1. 상품 이름으로 쇼핑몰 상품 검색
+        Optional<ShopItem> optionalShopItem = shopItemRepository.findByName(name);
+
+        if (optionalShopItem.isPresent()) {
+            ShopItem shopItem = optionalShopItem.get();
+
+            // 2. 검색된 상품이 있으면 수량 비교
+            if (shopItem.getStock() >= amount) {
+                // 현재 사용자 정보를 가져오는 방식으로 수정
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                    String username = userDetails.getUsername();
+
+                    // userRepository를 사용하여 현재 사용자의 정보를 가져옴
+                    Optional<UserEntity> optionalCurrentUser = userRepository.findByUsername(username);
+
+                    if (optionalCurrentUser.isPresent()) {
+                        UserEntity currentUser = optionalCurrentUser.get();
+
+                        // 3. 주문 생성
+                        OrderShopItem orderShopItem = OrderShopItem.builder()
+                                .shopItem(shopItem)
+                                .amount(amount)
+                                // total price는 구매 요청 후 금액 전달할 예정
+                                .status("구매 요청")
+                                .user(currentUser) // 현재 사용자 객체의 id
+                                .dateTime(LocalDateTime.now())
+                                .build();
+
+                        // 주문 저장
+                        orderShopItemRepository.save(orderShopItem);
+
+                        return "구매 요청이 완료되었습니다.";
+                    }
+                    else {
+                        return "사용자 정보를 찾을 수 없습니다. 구매 요청을 실패했습니다.";
+                    }
+                } else {
+                    return "사용자 정보를 찾을 수 없습니다.";
+                }
+            } else {
+                // 4. 주문 불가능한 경우
+                return "수량이 부족합니다.";
+            }
+        } else {
+            // 4. 상품이 없는 경우
+            return "일치하는 상품이 없습니다.";
+        }
+    }
 }

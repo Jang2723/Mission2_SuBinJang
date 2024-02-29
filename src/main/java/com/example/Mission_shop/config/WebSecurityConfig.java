@@ -61,7 +61,9 @@ public class WebSecurityConfig {
 
                         .requestMatchers(
                                 "/items/{itemId}/purchaseOffer",
-                                "/items/{itemId}/offer/read"
+                                "/items/{itemId}/offer/read",
+                                // 쇼핑몰 아이템 구매 요청
+                                "/shop/items/buyRequest"
                         )
                         .hasAnyRole("USER","BUSINESS")
 
