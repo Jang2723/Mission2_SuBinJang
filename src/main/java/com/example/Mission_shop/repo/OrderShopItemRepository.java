@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface OrderShopItemRepository extends JpaRepository<OrderShopItem, Long> {
     List<OrderShopItem> findAllByOrderByDateTimeDesc();
+
+    List<OrderShopItem> findByUserUsername(String username);
 }

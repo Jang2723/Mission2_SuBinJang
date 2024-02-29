@@ -185,7 +185,7 @@ public class ShopItemService {
                         // 주문 저장
                         orderShopItemRepository.save(orderShopItem);
 
-                        return "구매 요청이 완료되었습니다.";
+                        return "구매 요청이 완료되었습니다." + shopItem.getPrice() * amount + "원 입니다.";
                     }
                     else {
                         return "사용자 정보를 찾을 수 없습니다. 구매 요청을 실패했습니다.";
@@ -200,6 +200,32 @@ public class ShopItemService {
         } else {
             // 4. 상품이 없는 경우
             return "일치하는 상품이 없습니다.";
+        }
+    }
+
+    // 주문에 맞는 금액 송금
+    public String sendMoney(Integer totalPrice, String username){
+        // username으로 orderShopItem에서 주문 내역 검색
+        List<OrderShopItem> orderList = orderShopItemRepository.findByUserUsername(username);
+
+        // 주문 내역이 있을 경우
+        if (!orderList.isEmpty()) {
+            // 주문 내역의 총 주문 금액 계산
+            Integer totalOrderPrice = orderList.stream()
+                    .mapToInt(orderShopItem -> orderShopItem.getAmount() * orderShopItem.getShopItem().getPrice())
+                    .sum();
+
+            // 송금할 금액과 주문 내역의 총 주문 금액 비교
+            if (totalPrice.equals(totalOrderPrice)) {
+                // 금액이 일치할 경우 송금 성공
+                return "금액을 보냈습니다.";
+            } else {
+                // 금액이 일치하지 않을 경우
+                return "금액이 부족합니다.";
+            }
+        } else {
+            // 주문 내역이 없을 경우
+            return "주문 내역이 없습니다.";
         }
     }
 }

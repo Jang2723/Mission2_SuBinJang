@@ -63,7 +63,8 @@ public class WebSecurityConfig {
                                 "/items/{itemId}/purchaseOffer",
                                 "/items/{itemId}/offer/read",
                                 // 쇼핑몰 아이템 구매 요청
-                                "/shop/items/buyRequest"
+                                "/shop/items/buyRequest",
+                                "/shop/items/buyRequest/sendMoney"
                         )
                         .hasAnyRole("USER","BUSINESS")
 
