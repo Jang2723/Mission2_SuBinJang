@@ -12,7 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -105,6 +108,40 @@ public class ShopItemService {
         } else {
             return "해당 사용자의 쇼핑몰을 찾을 수 없습니다.";
         }
+    }
+
+    // 상품검색
+    // 이름,가격 범위를 기준으로 상품 검색, 조회되는 상품이 등록된 쇼핑몰에 대한 정보가 함께 제공
+    public List<Object[]> searchShopItem(String name, Integer minPrice, Integer maxPrice) {
+        List<ShopItem> foundItems;
+
+        if (name != null && minPrice != null && maxPrice != null) {
+            // 이름과 가격 범위로 상품 검색
+            foundItems = shopItemRepository.findByNameContainingAndPriceBetween(name, minPrice, maxPrice);
+        } else if (name != null) {
+            // 이름으로만 상품 검색
+            foundItems = shopItemRepository.findByNameContaining(name);
+        } else if (minPrice != null && maxPrice != null) {
+            // 가격 범위로 상품 검색
+            foundItems = shopItemRepository.findByPriceBetween(minPrice, maxPrice);
+        } else {
+            // 모든 상품 검색
+            foundItems = shopItemRepository.findAll();
+        }
+
+        // 검색된 상품 및 쇼핑몰 정보를 함께 반환
+        List<Object[]> result = new ArrayList<>();
+        for (ShopItem item : foundItems) {
+            Object[] itemWithShopInfo = new Object[6];
+            itemWithShopInfo[0] = "상품 이름: " + item.getName();
+            itemWithShopInfo[1] = "상품 가격: " + item.getPrice();
+            itemWithShopInfo[2] = "상품 소개: " + item.getDescription();
+            itemWithShopInfo[3] = "쇼핑몰 이름: " + item.getShop().getName();
+            itemWithShopInfo[4] = "쇼핑몰 소개: " + item.getShop().getIntroduction();
+            itemWithShopInfo[5] = "쇼핑몰 분류: " + item.getShop().getCategory();
+            result.add(itemWithShopInfo);
+        }
+        return result;
     }
 
 }

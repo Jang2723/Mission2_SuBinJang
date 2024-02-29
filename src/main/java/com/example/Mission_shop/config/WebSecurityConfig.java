@@ -67,7 +67,8 @@ public class WebSecurityConfig {
 
                         .requestMatchers(
                                 "/items/itemAllList",
-                                "/shops/search"
+                                "/shops/search",
+                                "/shop/items/search"
                         )
                         .hasAnyRole("USER" , "BUSINESS", "ADMIN")
 

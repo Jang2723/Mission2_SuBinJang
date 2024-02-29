@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("shop/items")
@@ -72,5 +74,16 @@ public class ShopItemController {
             // username과 password가 일치하지 않을 경우 처리
             return "Authentication failed. Invalid username or password.";
         }
+    }
+
+    // 쇼핑몰 상품 검색
+    // 이름,가격 범위를 기준으로 상품 검색, 조회되는 상품이 등록된 쇼핑몰에 대한 정보가 함께 제공
+    @GetMapping("/search")
+    public List<Object[]> searchShopItem(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice
+    ) {
+        return shopItemService.searchShopItem(name, minPrice, maxPrice);
     }
 }
