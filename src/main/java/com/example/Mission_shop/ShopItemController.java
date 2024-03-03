@@ -1,6 +1,5 @@
 package com.example.Mission_shop;
 
-import com.example.Mission_shop.dto.ItemDto;
 import com.example.Mission_shop.dto.ShopItemDto;
 import com.example.Mission_shop.service.ShopItemService;
 import lombok.RequiredArgsConstructor;
@@ -110,6 +109,24 @@ public class ShopItemController {
             String username = userDetails.getUsername();
 
             return shopItemService.sendMoney(totalPrice, username);
+        } else {
+            // username과 password가 일치하지 않을 경우 처리
+            return "Authentication failed. Invalid username or password.";
+        }
+    }
+
+    //쇼핑몰 주인이 orderShopItem의  totalPrice 확인, 비어있지 않고 status = "구매 요청"이라면,
+    // status를 "요청 수락"으로 바꾸고 orderShopItem에 있는 amount만큼 재고를 감소시키기
+    @GetMapping("/buyRequest/check")
+    public String requestCheck() {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
+            String username = userDetails.getUsername();
+
+            return shopItemService.requestCheck(username);
         } else {
             // username과 password가 일치하지 않을 경우 처리
             return "Authentication failed. Invalid username or password.";

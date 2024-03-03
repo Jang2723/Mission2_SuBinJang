@@ -84,7 +84,9 @@ public class WebSecurityConfig {
                                 // 쇼핑몰 상품
                                 "/shop/items/register",
                                 "/shop/items/update",
-                                "/shop/items/delete"
+                                "/shop/items/delete",
+                                // 구매 요청 수락
+                                "/shop/items/buyRequest/check"
                         )
                         .hasRole("BUSINESS")
 

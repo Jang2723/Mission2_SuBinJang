@@ -41,8 +41,6 @@ public class ShopItemService {
                     .name(shopItemDto.getName())
                     .description(shopItemDto.getDescription())
                     .price(shopItemDto.getPrice())
-                    .mainCategory(shopItemDto.getMainCategory())
-                    .subCategory(shopItemDto.getSubCategory())
                     .stock(shopItemDto.getStock())
                     .shop(shop) // 상점 정보 설정
                     .build();
@@ -75,8 +73,6 @@ public class ShopItemService {
                 shopItem.setName(shopItemDto.getName());
                 shopItem.setDescription(shopItemDto.getDescription());
                 shopItem.setPrice(shopItemDto.getPrice());
-                shopItem.setMainCategory(shopItemDto.getMainCategory());
-                shopItem.setSubCategory(shopItemDto.getSubCategory());
                 shopItem.setStock(shopItemDto.getStock());
 
                 // 엔티티 저장
@@ -174,6 +170,7 @@ public class ShopItemService {
 
                         // 3. 주문 생성
                         OrderShopItem orderShopItem = OrderShopItem.builder()
+                                .shop(shopItem.getShop())
                                 .shopItem(shopItem)
                                 .amount(amount)
                                 // total price는 구매 요청 후 금액 전달할 예정
@@ -232,6 +229,47 @@ public class ShopItemService {
         } else {
             // 주문 내역이 없을 경우
             return "주문 내역이 없습니다.";
+        }
+    }
+
+    public String requestCheck(String username) {
+        // username을 가진 사용자의 쇼핑몰 찾음
+        Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
+
+        // username을 가진 쇼핑몰의 id를 가진 orderShopItem 찾음
+        // totalPirce가 null아 이나고 status 가 "구매 요청" 일 경우
+        // status를 "요청 수락" 으로 바꾸고, orderShopItem의 amount 만큼 username을 가진 쇼핑몰의 shop item id의 stock을 감소시킴
+
+        if (optionalShop.isPresent()) {
+            Shop shop = optionalShop.get();
+
+            // username을 가진 쇼핑몰의 id를 가진 orderShopItem 찾음
+            List<OrderShopItem> orderShopItems = orderShopItemRepository.findByShopIdAndStatus(shop.getId(), "구매 요청");
+
+            // totalPirce가 null아 이나고 status 가 "구매 요청" 일 경우
+            for (OrderShopItem orderShopItem : orderShopItems) {
+                if (orderShopItem.getTotalPrice() != null) {
+                    // status를 "요청 수락" 으로 바꾸고,
+                    orderShopItem.setStatus("요청 수락");
+                    orderShopItemRepository.save(orderShopItem);
+
+                    // orderShopItem의 amount 만큼 username을 가진 쇼핑몰의 shop item id의 stock을 감소시킴
+                    ShopItem shopItem = orderShopItem.getShopItem();
+                    if (shopItem != null) {
+                        Integer amount = orderShopItem.getAmount();
+                        if (amount != null && amount > 0) {
+                            shopItem.setStock(shopItem.getStock() - amount);
+                            shopItemRepository.save(shopItem);
+                        }
+                    }
+                }
+                else{
+                    return "금액이 입금되지 않았습니다.";
+                }
+            }
+            return "구매 요청을 수락하고 재고를 갱신했습니다.";
+        } else {
+            return "해당 사용자가 소유한 쇼핑몰이 없습니다.";
         }
     }
 }

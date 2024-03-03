@@ -22,6 +22,11 @@ public class OrderShopItem {
     private ShopItem shopItem;
 
     @Setter
+    @ManyToOne
+    @JoinColumn(name = "shop_id") // shop id
+    private Shop shop;
+
+    @Setter
     @Column(nullable = false)
     private Integer amount;
 
@@ -31,7 +36,7 @@ public class OrderShopItem {
     @Setter
     private String status;
 
-    @ManyToOne
+    @ManyToOne // 주문한 사람의 USER ID
     @JoinColumn(name = "user_id")
     private UserEntity user;
 

@@ -9,4 +9,6 @@ public interface OrderShopItemRepository extends JpaRepository<OrderShopItem, Lo
     List<OrderShopItem> findAllByOrderByDateTimeDesc();
 
     List<OrderShopItem> findByUserUsername(String username);
+
+    List<OrderShopItem> findByShopIdAndStatus(Long id, String 구매_요청);
 }
