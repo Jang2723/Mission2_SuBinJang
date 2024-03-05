@@ -23,7 +23,7 @@ import java.util.Optional;
 public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsManager manager;
-    private final JpaUserDetailsManager userDetailsManager; // JpaUserDetailsManager로 수정
+    private final JpaUserDetailsManager userDetailsManager;
 
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
@@ -46,7 +46,7 @@ public class UserController {
                     .build()
             );
         }
-        return "register done";
+        return "회원가입이 완료되었습니다.";
     }
 
     // 필수 정보 업데이트 : 비활성 사용자 -> 일반 사용자
@@ -78,12 +78,12 @@ public class UserController {
                 }*/
 
                 manager.updateUser(customUserDetails);
-                return "User information updated successfully";
+                return "사용자 정보가 업데이트 되었습니다.";
             } else {
-                return "Incorrect password";
+                return "비밀번호가 틀렸습니다.";
             }
         } else {
-            return "User details not found";
+            return "사용자를 찾을 수 없습니다.";
         }
     }
 
@@ -107,12 +107,12 @@ public class UserController {
                 customUserDetails.setBusinessNumber(businessNumber);
                 customUserDetails.setApply(apply);
                 userDetailsManager.BusinessUser(customUserDetails); // updateUser 메서드로 변경
-                return "User Business Number updated successfully";
+                return username + "의 사업자 번호가 등록되었습니다.";
             } else {
-                return "Incorrect password";
+                return "비밀번호가 틀렸습니다.";
             }
         } else {
-            return "User details not found";
+            return "사용자를 찾을 수 없습니다.";
         }
     }
 
@@ -138,7 +138,7 @@ public class UserController {
         // 비즈니스 번호로 사용자 찾아내기
         Optional<UserEntity> optionalUser = userRepository.findByBusinessNumber(businessNumber);
         if (optionalUser.isEmpty()) {
-            return "User not found with business number: " + businessNumber;
+            return businessNumber + " 사업자 번호를 가진 사용자를 찾을 수 없습니다.";
         }
 
         UserEntity userEntity = optionalUser.get();
@@ -162,7 +162,6 @@ public class UserController {
         // 엔티티 저장
         userRepository.save(userEntity);
 
-        return "Application " + acceptRefuse + "ed successfully for user with business number: " + businessNumber;
-
+        return businessNumber + " 사업자 번호를 가진 사용자의 사업자 전환 신청이 " + acceptRefuse + "되었습니다.";
     }
 }

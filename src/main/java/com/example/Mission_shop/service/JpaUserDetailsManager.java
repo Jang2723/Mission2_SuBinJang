@@ -30,12 +30,15 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     ) {
         this.userRepository = userRepository;
 
-         // 관리자
-        createUser(CustomUserDetails.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin"))
-                .authorities("ROLE_ADMIN")
-                .build());
+        // 이미 관리자 계정이 존재하는지 확인
+        if (!userExists("admin")) {
+            // 관리자 계정 생성
+            createUser(CustomUserDetails.builder()
+                    .username("admin")
+                    .password(passwordEncoder.encode("admin"))
+                    .authorities("ROLE_ADMIN")
+                    .build());
+        }
     }
 
     @Override
@@ -118,7 +121,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             // 사용자의 권한을 ROLE_USER로 변경
             userEntity.setAuthorities("ROLE_USER");
 
-            // 이미 사업자 전환 신청이 수락된 사용자가 수정할 경우 권한 유지 // TODO 신청 거절한 사람도 다시 ACCEPT?
+            // 이미 사업자 전환 신청이 수락된 사용자가 수정할 경우 권한 유지
             if (userEntity.getApply() != null  && userEntity.getApply().equals("ACCEPT")){
                 userEntity.setAuthorities("ROLE_BUSINESS");
             }
@@ -213,7 +216,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     }
 
 
-    // 나중에 구현 - 요구사항에 보이지 않음
+    // 나중에 구현
     @Override
     public void deleteUser(String username) {
 

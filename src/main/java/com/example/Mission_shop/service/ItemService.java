@@ -38,7 +38,7 @@
             // 아이템 저장
             itemRepository.save(item);
 
-            return "Item registered successfully";
+            return "중거고래 상품을 등록하였습니다.";
         }
 
         public List<ItemDto> itemAllList() {
@@ -67,7 +67,7 @@
 
                 // 현재 사용자가 해당 아이템의 소유자인지 확인
                 if (!item.getUser().getUsername().equals(username)) {
-                    return "You are not authorized to update this item.";
+                    return "해당 상품을 업데이트할 권한이 없습니다.";
                 }
 
                 // 아이템 정보 수정
@@ -78,9 +78,9 @@
                 // 아이템 저장
                 itemRepository.save(item);
 
-                return "Item updated successfully";
+                return "상품을 업데이트 했습니다.";
             } else {
-                return "Item not found with title: " + title + " for user: " + username;
+                return username + "사용자의 " + title + "상품을 찾을 수 없습니다.";
             }
         }
 
@@ -96,19 +96,19 @@
                 if (item.getUser().getUsername().equals(username)) {
                     // 아이템 정보 삭제
                     itemRepository.delete(item);
-                    return "Item deleted successfully";
+                    return "상품을 삭제했습니다.";
                 } else {
-                    return "You are not authorized to delete this item.";
+                    return "이 상품을 삭제할 권한이 없습니다.";
                 }
             } else {
-                return "Item not found with title: " + title;
+                return title + " 상품을 찾을 수 없습니다.";
             }
         }
 
-        public String purchaseOffer(Long id, OfferDto offerDto, String username) {
+        public String buyRequestItem(String title, OfferDto offerDto, String username) {
             // 해당 itemId로 Item을 찾음
-            Item item = itemRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Item not found with id: " + id));
+            Item item = itemRepository.findByTitle(title)
+                    .orElseThrow(() -> new RuntimeException("해당 상품을 찾을 수 없습니다."));
 
             // 현재 사용자가 해당 아이템의 소유자인지 확인 ,  일치하지 않을 경우 구매 제안
             if (!item.getUser().getUsername().equals(username)) {
@@ -117,16 +117,16 @@
                 offer.setItem(item);
                 // 구매 제안을 하는 사용자를 설정
                 UserEntity user = userRepository.findIdByUsername(username)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                        .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
                 offer.setUser(user);
                 offer.setOfferPrice(offerDto.getOfferPrice());
                 offer.setStatus("구매 제안");
                 // 구매 제안 저장
                 offerRepository.save(offer);
 
-                return "Offer registered successfully";
+                return "구매 제안이 등록되었습니다.";
             }else{
-                return "You cannot make an offer on your own item.";
+                return "자신의 상품에는 구매 제안을 할 수 없습니다.";
             }
         }
 
@@ -135,11 +135,11 @@
             // id는 구매제안한 item id
             // id로 물품 조회
             Item item = itemRepository.findById(id)
-                    .orElseThrow(() -> new ItemNotFoundException("Item not found with id: " + id));
+                    .orElseThrow(() -> new ItemNotFoundException("해당 id의 상품을 찾을 수 없습니다. 상품 id:" + id));
 
             // username으로 user id 가져오기
             UserEntity user = userRepository.findIdByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
             // 물품을 등록한 사용자가 요청한 경우
             if (item.getUser().getId().equals(user.getId())) {
                 // 물품 등록자인 경우, 해당 물품의 모든 제안 조회
@@ -180,11 +180,11 @@
                         // acceptRefuse를 offer의 status에 저장
                         offer.setStatus(acceptRefuse);
                         offerRepository.save(offer); // 변경사항 저장
-                        return "Offer status updated successfully";
+                        return "구매 제안 상태가 업데이트 되었습니다.";
                     }
                 }
             }
-            return "Failed to update offer status: Offer not found or unauthorized";
+            return "제안 상태를 업데이트하지 못했습니다. 제안을 찾을 수 없거나 승인되지 않았습니다.";
         }
 
         // 구매 확정 - 대상 물품의 상태는 판매 완료, 다른 구매 제안의 상태는 거절
@@ -217,15 +217,15 @@
                             offerRepository.save(otherOffer); // 변경사항 저장
                         }
 
-                        return "Offer confirmed successfully";
+                        return "제안이 확인되었습니다.";
                     } else {
-                        return "Failed to confirm offer: Offer status is not accepted";
+                        return "제안 확인 실패: 제안 상태가 승인되지 않았습니다.";
                     }
                 } else {
-                    return "Failed to confirm offer: Unauthorized user";
+                    return "제안 확인 실패: 구매 제안 사용자만 확인할 수 있습니다.";
                 }
             } else {
-                return "Failed to confirm offer: Offer not found";
+                return "제안 확인 실패: 제안을 찾을 수 없습니다.";
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.Mission_shop;
 
 import com.example.Mission_shop.dto.ShopItemDto;
+import com.example.Mission_shop.exception.AuthenticationFailedException;
 import com.example.Mission_shop.service.ShopItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,22 +19,22 @@ import java.util.List;
 public class ShopItemController {
     private final ShopItemService shopItemService;
 
-    // 쇼핑몰에 상품 등록
-    @PostMapping("/register")
-    public String registerShopItem (@RequestBody ShopItemDto shopItemDto) {
-        // 현재 인증된 사용자 정보 가져오기
+    // 현재 인증된 사용자 정보를 가져오는 메서드
+    private String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
-            String username = userDetails.getUsername();
-
-            // 인증된 사용자의 정보 넘겨주기
-            return shopItemService.registerShopItem(shopItemDto, username);
+            return userDetails.getUsername();
         } else {
-            // username과 password가 일치하지 않을 경우 처리
-            return "Authentication failed. Invalid username or password.";
+            throw new AuthenticationFailedException("Authentication failed. Invalid username or password.");
         }
+    }
+
+    // 쇼핑몰에 상품 등록
+    @PostMapping("/register")
+    public String registerShopItem (@RequestBody ShopItemDto shopItemDto) {
+        String username = getCurrentUsername();
+        return shopItemService.registerShopItem(shopItemDto, username);
     }
 
     // 상품 수정
@@ -42,18 +43,8 @@ public class ShopItemController {
             @RequestParam String name,
             @RequestBody ShopItemDto shopItemDto
     ) {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
-            String username = userDetails.getUsername();
-
-            return shopItemService.updateShopItem(shopItemDto, username, name);
-        } else {
-            // username과 password가 일치하지 않을 경우 처리
-            return "Authentication failed. Invalid username or password.";
-        }
+        String username = getCurrentUsername();
+        return shopItemService.updateShopItem(shopItemDto, username, name);
     }
 
     // 상품 삭제
@@ -61,18 +52,8 @@ public class ShopItemController {
     public String deleteShopItem (
             @RequestParam String name
     ) {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
-            String username = userDetails.getUsername();
-
-            return shopItemService.deleteShopItem(name, username);
-        } else {
-            // username과 password가 일치하지 않을 경우 처리
-            return "Authentication failed. Invalid username or password.";
-        }
+        String username = getCurrentUsername();
+        return shopItemService.deleteShopItem(name, username);
     }
 
     // 쇼핑몰 상품 검색
@@ -101,52 +82,22 @@ public class ShopItemController {
     public String sendMoney(
             @RequestParam Integer totalPrice
     ) {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
-            String username = userDetails.getUsername();
-
-            return shopItemService.sendMoney(totalPrice, username);
-        } else {
-            // username과 password가 일치하지 않을 경우 처리
-            return "Authentication failed. Invalid username or password.";
-        }
+        String username = getCurrentUsername();
+        return shopItemService.sendMoney(totalPrice, username);
     }
 
     //쇼핑몰 주인이 orderShopItem의  totalPrice 확인, 비어있지 않고 status = "구매 요청"이라면,
     // status를 "요청 수락"으로 바꾸고 orderShopItem에 있는 amount만큼 재고를 감소시키기
     @GetMapping("/buyRequest/check")
     public String requestCheck() {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
-            String username = userDetails.getUsername();
-
-            return shopItemService.requestCheck(username);
-        } else {
-            // username과 password가 일치하지 않을 경우 처리
-            return "Authentication failed. Invalid username or password.";
-        }
+        String username = getCurrentUsername();
+        return shopItemService.requestCheck(username);
     }
 
     // 구매 요청 수락 전 - 구매 요청 취소 / 수락 후 - 구매 요청 취소 불가능
     @GetMapping("/buyRequest/cancel")
     public String requestCancel() {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // 이제 userDetails를 사용하여 사용자 정보를 가져올 수 있습니다.
-            String username = userDetails.getUsername();
-
-            return shopItemService.requestCancel(username);
-        } else {
-            // username과 password가 일치하지 않을 경우 처리
-            return "Authentication failed. Invalid username or password.";
-        }
+        String username = getCurrentUsername();
+        return shopItemService.requestCancel(username);
     }
 }

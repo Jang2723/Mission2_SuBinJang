@@ -54,16 +54,16 @@ public class WebSecurityConfig {
                                 "/items/register",
                                 "/items/update",
                                 "/items/delete",
-                                "/items/{itemId}/offer/{offerId}/accept-refuse",
-                                "/items/{itemId}/offer/{offerId}/confirm",
+                                "/items/offer/accept-refuse",
+                                "/items/offer/confirm",
                                 // 구매 요청 취소
                                 "/shop/items/buyRequest/cancel"
                         )
                         .hasRole("USER")
 
                         .requestMatchers(
-                                "/items/{itemId}/purchaseOffer",
-                                "/items/{itemId}/offer/read",
+                                "/items/buyRequest",
+                                "/items/offer/read",
                                 // 쇼핑몰 아이템 구매 요청
                                 "/shop/items/buyRequest",
                                 "/shop/items/buyRequest/sendMoney"

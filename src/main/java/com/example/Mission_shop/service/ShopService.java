@@ -46,9 +46,9 @@ public class ShopService {
             // 저장
             shopRepository.save(shop);
 
-            return "Shop updated successfully";
+            return "쇼핑몰이 업데이트 되었습니다.";
         } else {
-            return "Shop not found for username: " + username;
+            return username + " 사용자의 쇼핑몰을 찾지 못했습니다.";
         }
     }
 
@@ -68,10 +68,10 @@ public class ShopService {
                 shopRepository.save(shop);
                 return "쇼핑몰 개설 신청이 완료되었습니다.";
             } else {
-                return "Name, introduction, category should not be null or empty.";
+                return "이름, 소개, 카테고리는 비어 있을 수 없습니다.";
             }
         } else {
-            return "Shop not found for username: " + username;
+            return username + " 사용자의 쇼핑몰을 찾지 못했습니다.";
         }
     }
 
@@ -127,7 +127,7 @@ public class ShopService {
             shopRepository.save(shop);
             return "쇼핑몰 허가 완료";
         } else {
-            return "Shop not found for shop name: " + shopDto.getName();
+            return shopDto.getName() + " 쇼핑몰을 찾지못했습니다.";
         }
     }
 
@@ -141,15 +141,15 @@ public class ShopService {
 
             // 폐쇄 요청 사유 없으면 실패
             if (shopDto.getClosureReason() == null || shopDto.getClosureReason().isEmpty()) {
-                return "폐쇄 요청 실패. 폐쇄 사유를 작성해야 합니다.";
+                return "폐쇄 요청 실패: 폐쇄 사유를 작성해야 합니다.";
             }
 
             shop.setClosureRequest("폐쇄 요청");
             shop.setClosureReason(shopDto.getClosureReason());
             shopRepository.save(shop);
-            return "폐쇄 요청 완료";
+            return "폐쇄 요청이 완료 되었습니다.";
         } else {
-            return "폐쇄 요청 실패." + username+"의 쇼핑몰을 찾을 수 없습니다.";
+            return "폐쇄 요청 실패: " + username+"의 쇼핑몰을 찾을 수 없습니다.";
         }
     }
 
