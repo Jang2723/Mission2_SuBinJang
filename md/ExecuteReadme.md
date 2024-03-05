@@ -5,7 +5,7 @@
 - `http://localhost:8080/token/issue`에서 `admin` jwt 발급
 ![admin jwt](/md/ExecuteReadmeIMG/2.admin-JWT.PNG)
 
-## 아래의 모든 과정은 authorization 탭에서 baarer token입력 필수
+## 아래의 모든 과정은 authorization 탭에서 bearer token 입력 필수
 2. 사용자 
 - `http://localhost:8080/users/register` 에서 사용자 회원가입이 가능하다.
 ![test2 회원가입](/md/ExecuteReadmeIMG/3.사용자회원가입test2.PNG)
