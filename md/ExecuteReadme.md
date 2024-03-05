@@ -28,7 +28,7 @@
 - 관리자가 사업자 전환을 수락하면 데이터베이스에서도 사용자의 역할이 바뀐 것을 확인할 수 있다.
 ![role business](/md/ExecuteReadmeIMG/14.수락후role변화.PNG)
 
-3. 중고거래
+## 중고거래 중개하기
 ![사용자 목록](/md/ExecuteReadmeIMG/15.사용자목록.PNG)
 - `http://localhost:8080/items/register` 에서 일반 사용자는 중고 거래 물품을 등록할 수 있습니다. - authorization 탭에서 baarer token입력 필수
 ![중고거래 등록 성공](/md/ExecuteReadmeIMG/16.중고거래등록성공.PNG) 
@@ -57,7 +57,7 @@
   - 구매 확정시 같은 물품의 다른 제안은 거절로 변경된다.
 
 
-4. 쇼핑몰
+## 쇼핑몰 운영하기
 - 일반사용자가 사업자 사용자로 전환될 때 자동으로 준비중 상태의 쇼핑몰이 추가 된다.
 ![준비중 쇼핑몰](/md/ExecuteReadmeIMG/29.쇼핑몰준비중.PNG)
 - `http://localhost:8080/shops/update` 에서 쇼핑몰 주인이 자유롭게 수정이 가능하다
@@ -76,7 +76,7 @@
 ![status](/md/ExecuteReadmeIMG/38.개설신청status.PNG)
 - 관리자는 `http://localhost:8080/shops/apply/read` 에서 쇼핑몰 개설 신청 목록을 볼 수 있다.
 ![신청 목록](/md/ExecuteReadmeIMG/37.개설신청목록.PNG)
-- 관리자는 `http://localhost:8080/shops/apply/open/acceptRefuse` 에서 개실 신청을 허락/불허할 수 있다.
+- 관리자는 `http://localhost:8080/shops/apply/open/acceptRefuse` 에서 개실 신청을 허가/불허할 수 있다.
   - 불허
 ![불허](/md/ExecuteReadmeIMG/39.불허.PNG)
 ![불허 데베](/md/ExecuteReadmeIMG/40.불허-데베.PNG)
@@ -85,4 +85,44 @@
 ![허가-데베](/md/ExecuteReadmeIMG/42.허가-데베.PNG)
 ---
 - 쇼핑몰 관리
-- 쇼핑몰 주인은 상품을 등록할 수 있다.
+- 쇼핑몰 주인은 `http://localhost:8080/shop/items/register` 에서 상품을 등록할 수 있다.
+![상품등록완료](/md/ExecuteReadmeIMG/43.상품등록완료.PNG)
+![상품등록완료-데베](/md/ExecuteReadmeIMG/44.상품등록완료-데베.PNG)
+- 쇼핑몰 주인은 `http://localhost:8080/shop/items/update` 에서 등록한 상품을 수정할 수 있다.
+![상품수정](/md/ExecuteReadmeIMG/45.상품수정.PNG)
+![상품수정-데베](/md/ExecuteReadmeIMG/46.상품수정-데베.PNG)
+
+
+- 쇼핑몰 조회
+- 비활성 사용자를 제외한 사용자는 `http://localhost:8080/shops/search` 에서 쇼핑몰을 조회할 수 있다.
+- 이름, 쇼핑몰 분류를 조건으로 쇼핑몰을 검색할 수 있다. 
+- (검색할 수 있는 방법 : 1. 이름 2. 쇼핑몰 분류 3. 이름, 쇼핑몰 분류 4. 조건 없이)
+![검색](/md/ExecuteReadmeIMG/48.쇼핑몰검색.PNG)
+
+
+- 쇼핑몰 상품 검색
+- `http://localhost:8080/shop/items/search` 에서 비활성 사용자를 제외한 사용자는 상품을 검색할 수 있다.
+- 조회되는 상품이 등록된 쇼핑몰에 대한 정보도 함께 제공된다.
+![상품 검색](/md/ExecuteReadmeIMG/47.상품검색.PNG) 
+- 조건없이 상품 검색
+![조건상품](/md/ExecuteReadmeIMG/49.조건없이상품검색.PNG)
+
+
+- 상품 구매
+- 비활성 사용자를 제외한 사용자는 `http://localhost:8080/shop/items/buyReques` 에서 상품을 구매요청할 수 있다.
+![구매요청](/md/ExecuteReadmeIMG/50.상품구매요청.PNG)
+![구매요청-데베](/md/ExecuteReadmeIMG/51.구매요청-데베.PNG)
+- 구매 요청 후 사용자는 `http://localhost:8080/shop/items/buyRequest/sendMoney` 에서 구매에 필요한 금액을 전달한다.
+![금액전송](/md/ExecuteReadmeIMG/53.금액전송.PNG)
+![금액전송-데베](/md/ExecuteReadmeIMG/54.금액전송-데베.PNG)
+- 쇼핑몰 주인은 `http://localhost:8080/shop/items/buyRequest/check` 에서 구매 요청을 확인할 수있다.
+- 금액이 입금되지 않았을 때
+![금액입금x](/md/ExecuteReadmeIMG/52.구매요청확인-금액입금x.PNG)
+- 금액이 입금되었으면 요청을 수락하고, 재고가 자동으로 갱신된다.
+![요청수락](/md/ExecuteReadmeIMG/55.요청수락.PNG)
+![요청수락-데베](/md/ExecuteReadmeIMG/56.요청수락-데베.PNG)
+![재고갱신](/md/ExecuteReadmeIMG/57.재고갱신.PNG)
+- 구매 요청이 수락되면 구매 요청을 취소할 수 없다
+![취소 실패](/md/ExecuteReadmeIMG/58.재고갱신후취소불가.PNG)
+
+
