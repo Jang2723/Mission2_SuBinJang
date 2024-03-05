@@ -19,8 +19,13 @@
     - `spring.data.jpa.hibernate.ddl-auto`를 `update`로 수정
     - 이후 정상적으로 프로젝트 실행
 4. Postman을 이용한 실행 방법 => **[바로가기](/md/ExecuteReadme.md)**
+- 필요시 [포스트맨 참고](/md/Mission_Shop.postman_collection.json) collection을 import 하여 사용하세요
 ---
 ## 필수 기능 요구사항
 - [1. 사용자 인증 및 권한 처리 ](/md/1.User-authentication&authorization-handling.md)
 - [2. 중고거래 중개하기 ](/md/2.Used-trade.md)
 - [3. 쇼핑몰 운영하기 ](/md/3.ShoppingMall.md)
+
+---
+## 구현 방식 설명
+- 

@@ -5,6 +5,7 @@
 - `http://localhost:8080/token/issue`에서 `admin` jwt 발급
 ![admin jwt](/md/ExecuteReadmeIMG/2.admin-JWT.PNG)
 
+## 아래의 모든 과정은 authorization 탭에서 baarer token입력 필수
 2. 사용자 
 - `http://localhost:8080/users/register` 에서 사용자 회원가입이 가능하다.
 ![test2 회원가입](/md/ExecuteReadmeIMG/3.사용자회원가입test2.PNG)
@@ -30,14 +31,14 @@
 
 ## 중고거래 중개하기
 ![사용자 목록](/md/ExecuteReadmeIMG/15.사용자목록.PNG)
-- `http://localhost:8080/items/register` 에서 일반 사용자는 중고 거래 물품을 등록할 수 있습니다. - authorization 탭에서 baarer token입력 필수
+- `http://localhost:8080/items/register` 에서 일반 사용자는 중고 거래 물품을 등록할 수 있습니다. 
 ![중고거래 등록 성공](/md/ExecuteReadmeIMG/16.중고거래등록성공.PNG) 
 ![데이터베이스에서도 확인 가능](/md/ExecuteReadmeIMG/19.데이터베이스중고거래물품등록확인.PNG)
 - 사업자인 test2는 물품을 등록할 수 없습니다.
 ![중고거래 등록 실패](/md/ExecuteReadmeIMG/17.사업자중고거래등록실패.PNG)
-- `http://localhost:8080/items/itemAllList` 에서 등록된 중고거래 물품 목록을 확인할 수 있습니다. - authorization 탭에서 baarer token입력 필수
+- `http://localhost:8080/items/itemAllList` 에서 등록된 중고거래 물품 목록을 확인할 수 있습니다. 
 ![중고거래 물품 확인](/md/ExecuteReadmeIMG/18.중고거래물품확인.PNG)
-- `http://localhost:8080/items/update` 에서 등록한 중고거래 물품을 수정할 수 있습니다. - authorization 탭에서 baarer token입력 필수
+- `http://localhost:8080/items/update` 에서 등록한 중고거래 물품을 수정할 수 있습니다. 
 ![물품수정](/md/ExecuteReadmeIMG/20.중고거래상품수정.PNG)
 ![물품수정 데이터베이스](/md/ExecuteReadmeIMG/21.중고거래물품수정데이터베이스확인.PNG)
 - `http://localhost:8080/items/delete` 에서 등록한 중고거래 물품을 삭제할 수 있습니다.
