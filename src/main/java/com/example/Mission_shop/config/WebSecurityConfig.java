@@ -55,7 +55,9 @@ public class WebSecurityConfig {
                                 "/items/update",
                                 "/items/delete",
                                 "/items/{itemId}/offer/{offerId}/accept-refuse",
-                                "/items/{itemId}/offer/{offerId}/confirm"
+                                "/items/{itemId}/offer/{offerId}/confirm",
+                                // 구매 요청 취소
+                                "/shop/items/buyRequest/cancel"
                         )
                         .hasRole("USER")
 

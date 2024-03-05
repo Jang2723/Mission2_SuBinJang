@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -202,33 +203,29 @@ public class ShopItemService {
 
     // 주문에 맞는 금액 송금
     public String sendMoney(Integer totalPrice, String username){
-        // username으로 orderShopItem에서 주문 내역 검색
-        List<OrderShopItem> orderList = orderShopItemRepository.findByUserUsername(username);
+        // username으로 아래의 조건을 만족하는 주문 내역 가져오기
+        Optional<OrderShopItem> optionalLatestOrder = orderShopItemRepository.findFirstByUserUsernameAndStatusOrderByIdDesc(username, "구매 요청");
 
-        // 주문 내역이 있을 경우
-        if (!orderList.isEmpty()) {
+        // 가장 최근의 주문 내역 가져오기
+        if (optionalLatestOrder.isPresent()) {
+            OrderShopItem latestOrder = optionalLatestOrder.get();
+
             // 주문 내역의 총 주문 금액 계산
-            Integer totalOrderPrice = orderList.stream()
-                    .mapToInt(orderShopItem -> orderShopItem.getAmount() * orderShopItem.getShopItem().getPrice())
-                    .sum();
+            Integer totalOrderPrice = latestOrder.getAmount() * latestOrder.getShopItem().getPrice();
 
-            // 송금할 금액과 주문 내역의 총 주문 금액 비교
-            if (totalPrice.equals(totalOrderPrice)) {
+            if (totalPrice.compareTo(totalOrderPrice) >= 0) {
                 // 금액이 일치할 경우 송금 성공
-                // username으로 orderShopItem에서 주문 내역 찾기
                 // totalPrice 저장
-                for (OrderShopItem orderShopItem : orderList) {
-                    orderShopItem.setTotalPrice(totalPrice);
-                    orderShopItemRepository.save(orderShopItem);
-                }
+                latestOrder.setTotalPrice(totalPrice);
+                orderShopItemRepository.save(latestOrder);
+
                 return "금액을 보냈습니다.";
             } else {
-                // 금액이 일치하지 않을 경우
                 return "금액이 부족합니다.";
             }
         } else {
-            // 주문 내역이 없을 경우
-            return "주문 내역이 없습니다.";
+            // "구매 요청" 상태인 주문 내역이 없을 경우
+            return "구매 요청 중인 주문 내역이 없습니다.";
         }
     }
 
@@ -236,15 +233,16 @@ public class ShopItemService {
         // username을 가진 사용자의 쇼핑몰 찾음
         Optional<Shop> optionalShop = shopRepository.findByUserUsername(username);
 
-        // username을 가진 쇼핑몰의 id를 가진 orderShopItem 찾음
-        // totalPirce가 null아 이나고 status 가 "구매 요청" 일 경우
-        // status를 "요청 수락" 으로 바꾸고, orderShopItem의 amount 만큼 username을 가진 쇼핑몰의 shop item id의 stock을 감소시킴
-
         if (optionalShop.isPresent()) {
             Shop shop = optionalShop.get();
 
             // username을 가진 쇼핑몰의 id를 가진 orderShopItem 찾음
             List<OrderShopItem> orderShopItems = orderShopItemRepository.findByShopIdAndStatus(shop.getId(), "구매 요청");
+
+            // 주문 내역이 없을 경우
+            if (orderShopItems.isEmpty()) {
+                return "구매 요청이 없습니다.";
+            }
 
             // totalPirce가 null아 이나고 status 가 "구매 요청" 일 경우
             for (OrderShopItem orderShopItem : orderShopItems) {
@@ -270,6 +268,38 @@ public class ShopItemService {
             return "구매 요청을 수락하고 재고를 갱신했습니다.";
         } else {
             return "해당 사용자가 소유한 쇼핑몰이 없습니다.";
+        }
+    }
+
+    // 구매 요청 취수
+    public String requestCancel(String username) {
+        // username으로 orderShopItem에서 주문 내역 검색
+        // 주문 내역이 있을 경우
+            // status가 "구매 요청" 이라면 totalPrice를 null로 바꾸고, status를 "구매 취소"로 바꿈
+            // status가 "요청 수락" 이라면 "요청이 수락되어 구매를 취소할 수 없습니다" 출력
+        // 주문 내역이 없을 경우
+        // username + "주문 내역이 없습니다." 출력
+
+        // username으로 orderShopItem에서 주문 내역 검색
+        List<OrderShopItem> orderShopItems = orderShopItemRepository.findByUserUsername(username);
+
+        // 주문 내역이 있을 경우
+        if (!orderShopItems.isEmpty()) {
+            for (OrderShopItem orderShopItem : orderShopItems) {
+                // status가 "구매 요청" 이라면 totalPrice를 null로 바꾸고, status를 "구매 취소"로 바꿈
+                if ("구매 요청".equals(orderShopItem.getStatus())) {
+                    orderShopItem.setTotalPrice(0);
+                    orderShopItem.setStatus("구매 취소");
+                    orderShopItemRepository.save(orderShopItem);
+                } else if ("요청 수락".equals(orderShopItem.getStatus())) {
+                    // status가 "요청 수락" 이라면 "요청이 수락되어 구매를 취소할 수 없습니다" 출력
+                    return "요청이 수락되어 구매를 취소할 수 없습니다.";
+                }
+            }
+            return "구매 요청을 취소하였습니다.";
+        } else {
+            // 주문 내역이 없을 경우
+            return username + "주문 내역이 없습니다.";
         }
     }
 }
