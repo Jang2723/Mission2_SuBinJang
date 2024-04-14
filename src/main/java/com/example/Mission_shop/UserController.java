@@ -129,16 +129,16 @@ public class UserController {
     // 사업자 전환 신청 수락 - 거절
     @PostMapping("/admin/apply/accept-refuse")
     public String acceptRefuse(
-            @RequestParam("businessNumber")
-            String businessNumber,
+            @RequestParam("username")
+            String username,
             @RequestParam("acceptRefuse")
             String acceptRefuse
     ) {
 
         // 비즈니스 번호로 사용자 찾아내기
-        Optional<UserEntity> optionalUser = userRepository.findByBusinessNumber(businessNumber);
+        Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
-            return businessNumber + " 사업자 번호를 가진 사용자를 찾을 수 없습니다.";
+            return username + " 이름을 가진 사업자 신정차를 찾을 수 없습니다.";
         }
 
         UserEntity userEntity = optionalUser.get();
@@ -162,6 +162,6 @@ public class UserController {
         // 엔티티 저장
         userRepository.save(userEntity);
 
-        return businessNumber + " 사업자 번호를 가진 사용자의 사업자 전환 신청이 " + acceptRefuse + "되었습니다.";
+        return username + " 사용자의 사업자 사업자 전환 신청이 " + acceptRefuse + "되었습니다.";
     }
 }

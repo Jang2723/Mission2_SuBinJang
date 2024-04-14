@@ -14,4 +14,6 @@ public interface OrderShopItemRepository extends JpaRepository<OrderShopItem, Lo
     List<OrderShopItem> findByShopIdAndStatus(Long id, String status);
 
     Optional<OrderShopItem> findFirstByUserUsernameAndStatusOrderByIdDesc(String username, String status);
+
+    List<OrderShopItem> findByShopIdAndShopItemIdAndUserId(Long id, Long id1, Long id2);
 }

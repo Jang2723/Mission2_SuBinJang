@@ -17,4 +17,6 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
     List<ShopItem> findByPriceBetween(Integer minPrice, Integer maxPrice);
 
     Optional<ShopItem> findByName(String name);
+
+    Optional<ShopItem> findByNameAndShopId(String name, Long id);
 }

@@ -11,6 +11,7 @@
     import com.example.Mission_shop.repo.UserRepository;
     import lombok.AllArgsConstructor;
     import lombok.extern.slf4j.Slf4j;
+    import org.apache.catalina.User;
     import org.springframework.stereotype.Service;
 
     import java.util.ArrayList;
@@ -119,6 +120,9 @@
                 UserEntity user = userRepository.findIdByUsername(username)
                         .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
                 offer.setUser(user);
+                if (offerDto.getOfferPrice() < item.getMinimumPrice()) {
+                    return "최소 가격보다 높은 금액을 제시해 주세요.";
+                }
                 offer.setOfferPrice(offerDto.getOfferPrice());
                 offer.setStatus("구매 제안");
                 // 구매 제안 저장
@@ -131,11 +135,11 @@
         }
 
         // 등록한 사용자와 제안한 사용자만 구매제안 조회, username은 토큰을 입력한 사용자의 usernmae
-        public List<OfferDto> readOffer(Long id, String username) throws ItemNotFoundException {
+        public List<OfferDto> readOffer(String title, String username) throws ItemNotFoundException {
             // id는 구매제안한 item id
             // id로 물품 조회
-            Item item = itemRepository.findById(id)
-                    .orElseThrow(() -> new ItemNotFoundException("해당 id의 상품을 찾을 수 없습니다. 상품 id:" + id));
+            Item item = itemRepository.findByTitle(title)
+                    .orElseThrow(() -> new ItemNotFoundException("해당 이름의 상품을 찾을 수 없습니다. 상품 이름:" + title));
 
             // username으로 user id 가져오기
             UserEntity user = userRepository.findIdByUsername(username)
@@ -143,14 +147,14 @@
             // 물품을 등록한 사용자가 요청한 경우
             if (item.getUser().getId().equals(user.getId())) {
                 // 물품 등록자인 경우, 해당 물품의 모든 제안 조회
-                List<Offer> offers = offerRepository.findByItemId(id);
+                List<Offer> offers = offerRepository.findByItemId(item.getId());
                 if (offers.isEmpty()) {
                     return Collections.emptyList();
                 }
                 return mapToOfferDtoList(offers);
             } else {
                 // 구매 제안 사용자인 경우, 해당 물품에 대한 자신의 제안만 조회
-                List<Offer> offers = offerRepository.findByItemIdAndUserId(id, user.getId());
+                List<Offer> offers = offerRepository.findByItemIdAndUserId(item.getId(), user.getId());
                 return mapToOfferDtoList(offers);
             }
         }
@@ -164,17 +168,21 @@
             return offerDtos;
         }
 
-        public String offerAcceptRefuse(Long itemId, Long offerId, String username, String acceptRefuse) {
-            // offer list에서 offerId에 해당하는 항목 조회
-            Optional<Offer> optionalOffer = offerRepository.findById(offerId);
-            if (optionalOffer.isPresent()) {
-                Offer offer = optionalOffer.get();
+        public String offerAcceptRefuse(
+                String title, String offerUser, Long price, String username, String acceptRefuse
+        ) {
+            // offerUser의 username을 가진 회원 찾기
+            UserEntity user = userRepository.findIdByUsername(offerUser)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
+            // offer에서 offerUser, price로 제안 검색
+            Optional<Offer> optionalOfferoffer = offerRepository.findByUserIdAndOfferPrice(user.getId(),price);
+            if (optionalOfferoffer.isPresent()) {
                 // 해당 offer에 대한 물품 조회
-                Optional<Item> optionalItem = itemRepository.findById(itemId);
+                Optional<Item> optionalItem = itemRepository.findByTitle(title);
                 if (optionalItem.isPresent()) {
                     Item item = optionalItem.get();
-
+                    Offer offer = optionalOfferoffer.get();
                     // 물품을 등록한 사용자와 현재 사용자가 같을 경우
                     if (item.getUser().getUsername().equals(username)) {
                         // acceptRefuse를 offer의 status에 저장
@@ -188,45 +196,43 @@
         }
 
         // 구매 확정 - 대상 물품의 상태는 판매 완료, 다른 구매 제안의 상태는 거절
-        public String offerConfirm(Long itemId, Long offerId, String username) {
-            // 해당 offerId에 해당하는 제안 조회
-            Optional<Offer> optionalOffer = offerRepository.findById(offerId);
+        public String offerConfirm(String title, String username) {
+            // username을 가진 회원 찾기
+            UserEntity user = userRepository.findIdByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+            // title을 가진 item 찾기
+            Optional<Item> optionalItem = itemRepository.findByTitle(title);
+            if (!optionalItem.isPresent()) {
+                return "물품을 찾을 수 없습니다.";
+            }
+            Item item = optionalItem.get();
+
+            // 인증한 회원의 id와 item의 id, status가 "수락"인 offer 찾기
+            Optional<Offer> optionalOffer = offerRepository.findByItemIdAndUserIdAndStatus(item.getId(), user.getId(), "수락");
             if (optionalOffer.isPresent()) {
                 Offer offer = optionalOffer.get();
 
-                // 현재 사용자가 제안의 소유자인지 확인
-                if (offer.getUser().getUsername().equals(username)) {
-                    // 제안의 상태가 "수락"인지 확인
-                    if (offer.getStatus().equals("수락")) {
-                        // 제안의 상태를 "구매 확정"으로 변경
-                        offer.setStatus("구매 확정");
-                        offerRepository.save(offer); // 변경사항 저장
+                // 제안의 상태를 "구매 확정"으로 변경
+                offer.setStatus("구매 확정");
+                offerRepository.save(offer);
 
-                        // 해당 물품의 상태를 "판매 완료"로 변경
-                        Optional<Item> optionalItem = itemRepository.findById(itemId);
-                        if (optionalItem.isPresent()) {
-                            Item item = optionalItem.get();
-                            item.setStatus("판매 완료");
-                            itemRepository.save(item); // 변경사항 저장
-                        }
+                // 해당 물품의 상태를 "판매 완료"로 변경
+                item.setStatus("판매 완료");
+                itemRepository.save(item); // 변경사항 저장
 
-                        // itemId는 같지만 offerId가 다른 구매 제안들의 상태를 "거절"로 변경
-                        List<Offer> otherOffers = offerRepository.findByItemIdAndIdNot(itemId, offerId);
-                        for (Offer otherOffer : otherOffers) {
-                            otherOffer.setStatus("거절");
-                            offerRepository.save(otherOffer); // 변경사항 저장
-                        }
-
-                        return "제안이 확인되었습니다.";
-                    } else {
-                        return "제안 확인 실패: 제안 상태가 승인되지 않았습니다.";
-                    }
-                } else {
-                    return "제안 확인 실패: 구매 제안 사용자만 확인할 수 있습니다.";
+                // itemId는 같지만 현재 사용자가 아닌 다른 사용자의 offer의 상태를 "거절"로 변경
+                List<Offer> otherOffers = offerRepository.findByItemIdAndUserIdNot(item.getId(), user.getId());
+                for (Offer otherOffer : otherOffers) {
+                    otherOffer.setStatus("거절");
+                    offerRepository.save(otherOffer); // 변경사항 저장
                 }
+
+                return "제안이 확인되었습니다.";
             } else {
-                return "제안 확인 실패: 제안을 찾을 수 없습니다.";
+                return "적절한 제안을 찾을 수 없습니다. 제안 상태가 '수락'되어야 합니다.";
             }
         }
+
     }
 

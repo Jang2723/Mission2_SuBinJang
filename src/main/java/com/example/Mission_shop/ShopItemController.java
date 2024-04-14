@@ -71,10 +71,11 @@ public class ShopItemController {
     @PostMapping("/buyRequest")
     public String buyRequestShopItem(
             @RequestParam String name,
+            @RequestParam String shopName,
             @RequestParam Integer amount
     ) {
         // 상품(name)과 구매 수량을(amount) 기준으로 구매 요청
-        return shopItemService.buyRequest(name, amount);
+        return shopItemService.buyRequest(name, shopName, amount);
     }
     
     // username으로 주문 찾고 주문이 있으면 금액 전송
@@ -95,9 +96,13 @@ public class ShopItemController {
     }
 
     // 구매 요청 수락 전 - 구매 요청 취소 / 수락 후 - 구매 요청 취소 불가능
+    // 구매 취소 할 아이템과 샵 이름 포함
     @GetMapping("/buyRequest/cancel")
-    public String requestCancel() {
+    public String requestCancel(
+            @RequestParam String itemName,
+            @RequestParam String shopName
+    ) {
         String username = getCurrentUsername();
-        return shopItemService.requestCancel(username);
+        return shopItemService.requestCancel(itemName, shopName, username);
     }
 }

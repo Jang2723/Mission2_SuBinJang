@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -147,10 +148,11 @@ public class ShopItemService {
     }
 
     // 쇼핑몰 상품 구매 요청
-    public String buyRequest(String name, Integer amount) {
+    public String buyRequest(String name,String shopName, Integer amount) {
+        Optional<Shop> shop = shopRepository.findByName(shopName);
         // shopItem 에서 name과 amount로 검색,
-        // 1. 상품 이름으로 쇼핑몰 상품 검색
-        Optional<ShopItem> optionalShopItem = shopItemRepository.findByName(name);
+        // 1. 상품 이름과 쇼핑몰 id로 상품 검색
+        Optional<ShopItem> optionalShopItem = shopItemRepository.findByNameAndShopId(name,shop.get().getId() );
 
         if (optionalShopItem.isPresent()) {
             ShopItem shopItem = optionalShopItem.get();
@@ -221,7 +223,7 @@ public class ShopItemService {
 
                 return "금액을 보냈습니다.";
             } else {
-                return "금액이 부족합니다.";
+                return "금액이 부족합니다. 주문 금액은 " + totalOrderPrice + " 입니다.";
             }
         } else {
             // "구매 요청" 상태인 주문 내역이 없을 경우
@@ -272,7 +274,7 @@ public class ShopItemService {
     }
 
     // 구매 요청 취수
-    public String requestCancel(String username) {
+    public String requestCancel(String itemName, String shopName, String username) {
         // username으로 orderShopItem에서 주문 내역 검색
         // 주문 내역이 있을 경우
             // status가 "구매 요청" 이라면 totalPrice를 null로 바꾸고, status를 "구매 취소"로 바꿈
@@ -280,8 +282,17 @@ public class ShopItemService {
         // 주문 내역이 없을 경우
         // username + "주문 내역이 없습니다." 출력
 
-        // username으로 orderShopItem에서 주문 내역 검색
-        List<OrderShopItem> orderShopItems = orderShopItemRepository.findByUserUsername(username);
+        // username, itemName, shopName으로 orderShopItem에서 주문 내역 검색
+        // 1. shop name에 해당하는 shop 찾기
+        Optional<Shop> shop = shopRepository.findByName(shopName);
+        // 2, shop item에서 itemname에 해당하는 shop item 찾기
+        Optional<ShopItem> shopItem = shopItemRepository.findByNameAndShopId(itemName, shop.get().getId());
+
+        // 주문 내역에서 찾기 ( shop id , shop item id, user id) 를 만족해야 함
+        // username을 가진 회원 찾기
+        UserEntity user = userRepository.findIdByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        List<OrderShopItem> orderShopItems = orderShopItemRepository.findByShopIdAndShopItemIdAndUserId(shop.get().getId(), shopItem.get().getId(), user.getId());
 
         // 주문 내역이 있을 경우
         if (!orderShopItems.isEmpty()) {
@@ -295,11 +306,10 @@ public class ShopItemService {
                     // status가 "요청 수락" 이라면 "요청이 수락되어 구매를 취소할 수 없습니다" 출력
                     return "요청이 수락되어 구매를 취소할 수 없습니다.";
                 }
-            }
-            return "구매 요청을 취소하였습니다.";
+            }return "구매 요청을 취소하였습니다.";
         } else {
             // 주문 내역이 없을 경우
-            return username + "주문 내역이 없습니다.";
+            return username + " 사용자의 해당 주문 내역이 없습니다.";
         }
     }
 }

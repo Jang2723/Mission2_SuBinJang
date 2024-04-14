@@ -75,31 +75,31 @@ public class ItemController {
     // 중고거래 제안 읽기
     @GetMapping("/offer/read")
     public List<OfferDto> readOffer(
-            @RequestParam Long id
+            @RequestParam String title
     ) throws ItemNotFoundException {
         String username = getCurrentUsername();
-        return itemService.readOffer(id, username);
+        return itemService.readOffer(title, username);
     }
 
     // 중고거래 제안 수락/거절
     @PostMapping("/offer/accept-refuse")
     public String offerAcceptRefuse(
-            @RequestParam Long itemId,
-            @RequestParam Long offerId,
+            @RequestParam String title,
+            @RequestParam String offerUser,
+            @RequestParam Long price,
             @RequestParam String acceptRefuse
     ) {
         String username = getCurrentUsername();
-        return itemService.offerAcceptRefuse(itemId, offerId, username, acceptRefuse);
+        return itemService.offerAcceptRefuse(title, offerUser, price, username, acceptRefuse);
     }
 
     // 중고거래 제안 확인
     @PostMapping("/offer/confirm")
     public String offerConfirm(
-            @RequestParam Long itemId,
-            @RequestParam Long offerId
+            @RequestParam String title
     ) {
         String username = getCurrentUsername();
-        return itemService.offerConfirm(itemId, offerId, username);
+        return itemService.offerConfirm(title, username);
     }
 
 

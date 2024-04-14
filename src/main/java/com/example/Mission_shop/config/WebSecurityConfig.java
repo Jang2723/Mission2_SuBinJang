@@ -59,7 +59,7 @@ public class WebSecurityConfig {
                                 // 구매 요청 취소
                                 "/shop/items/buyRequest/cancel"
                         )
-                        .hasRole("USER")
+                        .hasAnyRole("USER","BUSINESS")
 
                         .requestMatchers(
                                 "/items/buyRequest",
