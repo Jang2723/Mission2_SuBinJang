@@ -8,11 +8,14 @@ import com.example.Mission_shop.repo.UserRepository;
 import com.example.Mission_shop.service.JpaUserDetailsManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,7 +63,6 @@ public class UserController {
             @RequestParam("age") Integer age,
             @RequestParam("email") String email,
             @RequestParam("phone") String phone
-            //@RequestParam(value = "image" , required = false) MultipartFile imageFile
     )   {
         UserDetails userDetails = manager.loadUserByUsername(username);
         if (userDetails instanceof CustomUserDetails) {
@@ -72,11 +74,6 @@ public class UserController {
                 customUserDetails.setEmail(email);
                 customUserDetails.setPhone(phone);
 
-                /*// 이미지 업로드 처리
-                if (!imageFile.isEmpty()) {
-                    saveImage(username, imageFile);
-                }*/
-
                 manager.updateUser(customUserDetails);
                 return "사용자 정보가 업데이트 되었습니다.";
             } else {
@@ -87,6 +84,26 @@ public class UserController {
         }
     }
 
+    // 프로필 이미지 추가
+    @PutMapping(
+            value ="profile",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )public String profileImg(
+            @RequestParam("file")
+            MultipartFile file,
+            @RequestParam("username")
+            String username
+    ){
+        UserDetails userDetails = manager.loadUserByUsername(username);
+        if (userDetails instanceof CustomUserDetails) {
+            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+
+            return userDetailsManager.profileImg(file, customUserDetails);
+        }
+        else {
+            return "프로필 등록 실패";
+        }
+    }
 
     // 일반 사용자 -> 사업자 사용자로 변환
     @PostMapping("/business")

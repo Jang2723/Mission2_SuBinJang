@@ -1,7 +1,9 @@
 package com.example.Mission_shop.service;
 
+import com.example.Mission_shop.FileHandlerUtils;
 import com.example.Mission_shop.entity.CustomUserDetails;
 import com.example.Mission_shop.entity.UserEntity;
+import com.example.Mission_shop.exception.AuthenticationFacade;
 import com.example.Mission_shop.repo.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,12 +25,17 @@ import java.util.Optional;
 @Service
 public class JpaUserDetailsManager implements UserDetailsManager {
     private final UserRepository userRepository;
+    private final AuthenticationFacade authFacade;
+    private final FileHandlerUtils fileHandlerUtils;
+
 
     public JpaUserDetailsManager (
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder, AuthenticationFacade authFacade, FileHandlerUtils fileHandlerUtils
     ) {
         this.userRepository = userRepository;
+        this.authFacade = authFacade;
+        this.fileHandlerUtils = fileHandlerUtils;
 
         // 이미 관리자 계정이 존재하는지 확인
         if (!userExists("admin")) {
@@ -115,8 +122,6 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             userEntity.setEmail(email);
             userEntity.setPhone(phone);
 
-           /* // 이미지 경로 저장
-            userEntity.setAvatar(userDetails.getAvatar());*/
 
             // 사용자의 권한을 ROLE_USER로 변경
             userEntity.setAuthorities("ROLE_USER");
@@ -134,55 +139,30 @@ public class JpaUserDetailsManager implements UserDetailsManager {
         }
     }
 
-    // 이미지 저장
-    /*private void saveImage(String username, MultipartFile image) {
-        // 유저 확인
-        Optional<UserEntity> optionalUser
-                = userRepository.findByUsername(username);
-        if (optionalUser.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
-        // 파일 저장 위치
-        // media/{username}/profile.{확장자}
-        // 없다면 폴더 생성
-        String profileDir = String.format("media/%s/", username);
-        log.info(profileDir); //  확인
-        // 주어진 Path를 기준으로, 없는 모든 디렉토리 생성하는 메서드
+    public String profileImg (MultipartFile file, UserDetails user) {
+        if (!userExists(user.getUsername())) {
+            throw new UsernameNotFoundException(user.getUsername());
+        }
+        // 사용자 정보 업데이트
         try {
-            Files.createDirectories(Path.of(profileDir));
-        }catch (IOException e) {
-            // 폴더를 만드는데 실패하면 기록하고 사용자에게 알림
-            log.error(e.getMessage());
+            CustomUserDetails userDetails = (CustomUserDetails) user;
+            UserEntity userEntity = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException(user.getUsername()));
+
+
+            String requestPath = fileHandlerUtils.saveFile(String.format("users/%d/", userEntity.getId()),
+                    "profile",file);
+
+
+            userEntity.setProfileImg(requestPath);
+            userRepository.save(userEntity);
+            return "프로필 사진 등록 성공";
+        }catch (ClassCastException e) {
+            log.error("Failed Cast to: {}", CustomUserDetails.class);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // 실제 파일 이름을 경로와 확장자를 포함하여 만들기
-        String originalFilename = image.getOriginalFilename();
-        String[] fileNameSplit = originalFilename.split("\\.");
-        String extension = fileNameSplit[fileNameSplit.length - 1];
-        String profileFilename = "profile." + extension;
-        log.info(profileFilename);
-
-        String profilePath = profileDir + profileFilename;
-        log.info(profilePath);
-
-        // 실제로 해당 위치에 파일을 저장
-        try {
-            image.transferTo(Path.of(profilePath));
-        }catch (IOException e) {
-            log.error(e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        // User에 아바타 위치를 저장
-        String requestPath = String.format("/static/%s/%s", username, profileFilename);
-        log.info(requestPath);
-        UserEntity target = optionalUser.get();
-        target.setAvatar(requestPath);
-
-        // 응답하기
-        userRepository.save(target);
-    }*/
+    }
 
     public void BusinessUser(UserDetails user) {
         // 수정하려는 사용자 확인

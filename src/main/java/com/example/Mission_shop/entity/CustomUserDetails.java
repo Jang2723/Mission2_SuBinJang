@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +53,10 @@ public class CustomUserDetails implements UserDetails {
     }*/
 
     @Setter
-    private String avatar; // 이미지
+    private String profileImg; // 이미지
+
+    @Getter
+    private UserEntity entity;
 
 
     @Override
@@ -77,7 +81,7 @@ public class CustomUserDetails implements UserDetails {
         userDetails.setAge(userEntity.getAge());
         userDetails.setEmail(userEntity.getEmail());
         userDetails.setPhone(userEntity.getPhone());
-        userDetails.setAvatar(userEntity.getAvatar());
+        userDetails.setProfileImg(userEntity.getProfileImg());
         /*// 권한은 일단 빈 문자열로 설정
         userDetails.setAuthorities("");*/
         return userDetails;

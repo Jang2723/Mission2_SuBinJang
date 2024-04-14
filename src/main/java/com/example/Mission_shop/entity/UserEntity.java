@@ -51,7 +51,7 @@ public class UserEntity {
     private String apply; // 신청 시 : apply , 수락 ; accept , 거절 : refuse
 
     @Setter
-    private String avatar; // 이미지
+    private String profileImg; // 이미지
 
 
     // 중고거래
