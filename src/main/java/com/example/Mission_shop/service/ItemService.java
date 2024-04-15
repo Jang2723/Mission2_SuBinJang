@@ -1,7 +1,9 @@
     package com.example.Mission_shop.service;
 
+    import com.example.Mission_shop.FileHandlerUtils;
     import com.example.Mission_shop.dto.ItemDto;
     import com.example.Mission_shop.dto.OfferDto;
+    import com.example.Mission_shop.entity.CustomUserDetails;
     import com.example.Mission_shop.entity.Item;
     import com.example.Mission_shop.entity.Offer;
     import com.example.Mission_shop.entity.UserEntity;
@@ -12,7 +14,10 @@
     import lombok.AllArgsConstructor;
     import lombok.extern.slf4j.Slf4j;
     import org.apache.catalina.User;
+    import org.springframework.http.HttpStatus;
     import org.springframework.stereotype.Service;
+    import org.springframework.web.multipart.MultipartFile;
+    import org.springframework.web.server.ResponseStatusException;
 
     import java.util.ArrayList;
     import java.util.Collections;
@@ -26,6 +31,8 @@
         private final UserRepository userRepository;
         private final ItemRepository itemRepository;
         private final OfferRepository offerRepository;
+        private final FileHandlerUtils fileHandlerUtils;
+
 
         public String registerItem(ItemDto itemDto, String username) {
             // 아이템 등록 처리
@@ -234,5 +241,25 @@
             }
         }
 
+        public String itemImg(String username, MultipartFile file, String title) {
+            // username을 가진 회원찾기
+            UserEntity user = userRepository.findIdByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+            // 회원의 id와 title을 가진 item 찾기
+            Optional<Item> optionalItem = itemRepository.findByTitleAndUserId(title, user.getId());
+
+            if (!optionalItem.isPresent()) {
+                return "해당 item에 대한 권한이 없습니다.";
+            }
+
+            Item item = optionalItem.get();            // 이미지 등록
+            String requestPath = fileHandlerUtils.saveFile(String.format("item/%d/", item.getId()),
+                    "itemImg",file);
+
+            item.setItemImg(requestPath);
+            itemRepository.save(item);
+            return "중고거래 물품 이미지 등록 성공";
+        }
     }
 

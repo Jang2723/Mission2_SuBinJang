@@ -1,4 +1,4 @@
-package com.example.Mission_shop;
+package com.example.Mission_shop.controller;
 
 import com.example.Mission_shop.dto.ItemDto;
 import com.example.Mission_shop.dto.OfferDto;
@@ -7,10 +7,12 @@ import com.example.Mission_shop.exception.ItemNotFoundException;
 import com.example.Mission_shop.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -102,6 +104,20 @@ public class ItemController {
         return itemService.offerConfirm(title, username);
     }
 
+    // 중고거래 물품 대표 이미지 등록
+    @PutMapping(
+            value = "itemImg",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )public String itemImg(
+            @RequestParam("file")
+            MultipartFile file,
+            @RequestParam("title")
+            String title
+    ) {
+        String username = getCurrentUsername();
+        return itemService.itemImg(username, file, title);
+
+    }
 
 }
 

@@ -47,7 +47,7 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/users/update",
                                 "/users/business",
-                                "users/profile"
+                                "/users/profile"
                         )
                         .authenticated()
 
@@ -55,6 +55,7 @@ public class WebSecurityConfig {
                                 "/items/register",
                                 "/items/update",
                                 "/items/delete",
+                                "/items/itemImg",
                                 "/items/offer/accept-refuse",
                                 "/items/offer/confirm",
                                 // 구매 요청 취소
@@ -88,6 +89,7 @@ public class WebSecurityConfig {
                                 "/shop/items/register",
                                 "/shop/items/update",
                                 "/shop/items/delete",
+                                "/shop/items/itemImg",
                                 // 구매 요청 수락
                                 "/shop/items/buyRequest/check"
                         )

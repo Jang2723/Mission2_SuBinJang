@@ -36,6 +36,9 @@ public class Item {
     private String status; // 최초 등록시 상태는 판매중, 구매 제안 수락 후 판매 완료
 
     @Setter
+    private String itemImg;
+
+    @Setter
     @ManyToOne
     @JoinColumn(name = "user_id") // 작성자의 ID를 저장하는 컬럼
     private UserEntity user;

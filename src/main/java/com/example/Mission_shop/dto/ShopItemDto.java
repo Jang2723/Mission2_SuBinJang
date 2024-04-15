@@ -35,6 +35,8 @@ public class ShopItemDto {
     @Min(0)
     private Integer stock;
 
+    private String shopItemImg;
+
     public static ShopItemDto fromEntity (ShopItem entity) {
         return ShopItemDto.builder()
                 .id(entity.getId())
@@ -42,6 +44,7 @@ public class ShopItemDto {
                 .description(entity.getDescription())
                 .price(entity.getPrice())
                 .stock(entity.getStock())
+                .shopItemImg(entity.getShopItemImg())
                 .build();
     }
 }

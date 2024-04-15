@@ -1,6 +1,6 @@
 package com.example.Mission_shop.service;
 
-import com.example.Mission_shop.dto.ItemDto;
+import com.example.Mission_shop.FileHandlerUtils;
 import com.example.Mission_shop.dto.ShopItemDto;
 import com.example.Mission_shop.entity.*;
 import com.example.Mission_shop.repo.OrderShopItemRepository;
@@ -14,12 +14,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -30,6 +30,7 @@ public class ShopItemService {
     private final ShopRepository shopRepository;
     private final OrderShopItemRepository orderShopItemRepository;
     private final UserRepository userRepository;
+    private final FileHandlerUtils fileHandlerUtils;
 
     public String registerShopItem (ShopItemDto shopItemDto, String username) {
         // 사용자 이름으로 상점을 찾음
@@ -311,5 +312,33 @@ public class ShopItemService {
             // 주문 내역이 없을 경우
             return username + " 사용자의 해당 주문 내역이 없습니다.";
         }
+    }
+
+    public String shopItemImg(String username, MultipartFile file, String shopItemName, String shopName) {
+        // shopName으로 shop 찾기
+        Optional<Shop> optionalShop = shopRepository.findByName(shopName);
+        // username으로 user 찾기
+        UserEntity user = userRepository.findIdByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        if (optionalShop.isEmpty())
+            return "해당하는 쇼핑몰이 존재하지 않습니다.";
+
+
+        if (!Objects.equals(optionalShop.get().getUser().getId(), user.getId()))
+            return "해당하는 쇼핑몰의 사업자만 이미지 등록이 가능합니다.";
+
+        Shop shop = optionalShop.get();
+        Optional<ShopItem> optionalShopItem = shopItemRepository.findByNameAndShopId(shopItemName, shop.getId());
+        ShopItem shopItem = optionalShopItem.get();
+
+        String requestPath = fileHandlerUtils.saveFile(String.format("shopItem/%d/", shopItem.getId()),
+                "shop-itemImg",file);
+
+        shopItem.setShopItemImg(requestPath);
+        shopItemRepository.save(shopItem);
+        return "쇼핑몰 상품 이미지 등록 성공";
+
+
+
     }
 }

@@ -1,14 +1,16 @@
-package com.example.Mission_shop;
+package com.example.Mission_shop.controller;
 
 import com.example.Mission_shop.dto.ShopItemDto;
 import com.example.Mission_shop.exception.AuthenticationFailedException;
 import com.example.Mission_shop.service.ShopItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -104,5 +106,20 @@ public class ShopItemController {
     ) {
         String username = getCurrentUsername();
         return shopItemService.requestCancel(itemName, shopName, username);
+    }
+
+    @PutMapping(
+            value = "itemImg",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )public String shopItemImg(
+            @RequestParam("file")
+            MultipartFile file,
+            @RequestParam("shopItemName")
+            String shopItemName,
+            @RequestParam("shopName")
+            String shopName
+    ){
+        String username = getCurrentUsername();
+        return shopItemService.shopItemImg(username, file, shopItemName, shopName);
     }
 }

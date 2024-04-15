@@ -1,4 +1,4 @@
-package com.example.Mission_shop;
+package com.example.Mission_shop.controller;
 
 import com.example.Mission_shop.dto.ShopDto;
 import com.example.Mission_shop.entity.ShopCategory;

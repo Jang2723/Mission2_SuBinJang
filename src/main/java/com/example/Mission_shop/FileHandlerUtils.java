@@ -39,6 +39,6 @@ public class FileHandlerUtils {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return String.format("/static/%s", path + filename);
+        return String.format("/media/%s", path + filename);
     }
 }

@@ -27,6 +27,7 @@ public class ItemDto {
     private Integer minimumPrice; // 최소 가격
 
     private String status; // 최초 등록시 상태는 판매중
+    private String itemImg;
 
     public static ItemDto fromEntity (Item entity){
         return ItemDto.builder()
@@ -34,6 +35,7 @@ public class ItemDto {
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .minimumPrice(entity.getMinimumPrice())
+                .itemImg(entity.getItemImg())
                 .status(entity.getStatus())
                 .build();
     }

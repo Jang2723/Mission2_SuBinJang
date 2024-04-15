@@ -45,9 +45,8 @@ public class ShopItem {
     private Integer stock;
 
 
-    /*// 상품 이미지 - 나중에 처리
     @Setter
-    private String image;*/
+    private String shopItemImg;
 
 
     @Setter
